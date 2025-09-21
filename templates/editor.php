@@ -6,6 +6,12 @@
     <title>LiveCSS Editor</title>
     <?php wp_head(); ?>
 <style>
+    body{
+        margin-top: -32px !important;
+    }
+    #wpadminbar {
+        display: none !important;
+    }
     :root {
         --background: 0 0% 100%;
         --foreground: 0 0% 3.9%;
