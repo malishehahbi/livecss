@@ -18,6 +18,8 @@
                 console.log('LiveCSSEditor constructor called');
                 this.currentSelector = '';
                 this.cssRules = new Map();
+                this.selectedElement = null;
+                this.selectionHighlighted = [];
                 this.iframe = null;
                 this.iframeDoc = null;
                 this.codeEditor = null;
@@ -104,8 +106,7 @@
                 // Selector input
                 const selectorInput = document.getElementById('selector-input');
                 selectorInput.addEventListener('input', () => {
-                    this.currentSelector = selectorInput.value.trim();
-                    this.updateVisualControls();
+                    this.updateSelectionFromInput();
                 });
 
                 // Pseudo-class buttons
@@ -132,6 +133,16 @@
                 document.getElementById('save-button').addEventListener('click', () => {
                     this.saveCSS();
                 });
+
+                // Breadcrumb clicks
+                document.getElementById('element-breadcrumb').addEventListener('click', (e) => {
+                    if (e.target.dataset.selector) {
+                        const selector = e.target.dataset.selector;
+                        document.getElementById('selector-input').value = selector;
+                        this.currentSelector = selector;
+                        this.updateVisualControls();
+                    }
+                });
             }
 
             setupIframe() {
@@ -139,6 +150,15 @@
                 
                 this.iframe.addEventListener('load', () => {
                     this.iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
+                    
+                    // Inject styles for element highlighting and selection
+                    const style = this.iframeDoc.createElement('style');
+                    style.textContent = `
+                        .livecss-hover-highlight { outline: 2px dashed #88ddff !important; cursor: pointer; }
+                        .livecss-selection-highlight { outline: 2px solid #88ddff !important; }
+                    `;
+                    this.iframeDoc.head.appendChild(style);
+
                     this.setupElementSelector();
                     this.updatePreview();
                 });
@@ -147,44 +167,83 @@
             setupElementSelector() {
                 if (!this.iframeDoc) return;
 
-                let highlightedElement = null;
-
-                this.iframeDoc.addEventListener('mouseover', (e) => {
-                    if (highlightedElement) {
-                        highlightedElement.classList.remove('element-highlight');
-                    }
-                    e.target.classList.add('element-highlight');
-                    highlightedElement = e.target;
+                this.iframeDoc.body.addEventListener('mouseover', (e) => {
+                    e.target.classList.add('livecss-hover-highlight');
                 });
 
-                this.iframeDoc.addEventListener('mouseout', (e) => {
-                    e.target.classList.remove('element-highlight');
+                this.iframeDoc.body.addEventListener('mouseout', (e) => {
+                    e.target.classList.remove('livecss-hover-highlight');
                 });
 
-                this.iframeDoc.addEventListener('click', (e) => {
+                this.iframeDoc.body.addEventListener('click', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+
                     const selector = this.generateSelector(e.target);
                     document.getElementById('selector-input').value = selector;
-                    this.currentSelector = selector;
-                    this.updateVisualControls();
                     
-                    e.target.classList.remove('element-highlight');
+                    // Manually trigger input event to update selection
+                    const inputEvent = new Event('input', { bubbles: true });
+                    document.getElementById('selector-input').dispatchEvent(inputEvent);
+
+                    this.updateBreadcrumb(e.target);
+                }, true);
+            }
+
+            updateSelectionFromInput() {
+                // Clear previous selection
+                this.selectionHighlighted.forEach(el => {
+                    el.classList.remove('livecss-selection-highlight');
                 });
+
+                this.currentSelector = document.getElementById('selector-input').value.trim();
+
+                if (this.currentSelector) {
+                    try {
+                        this.selectionHighlighted = Array.from(this.iframeDoc.querySelectorAll(this.currentSelector));
+                        this.selectionHighlighted.forEach(el => {
+                            el.classList.add('livecss-selection-highlight');
+                        });
+                    } catch (e) {
+                        // Invalid selector
+                        this.selectionHighlighted = [];
+                    }
+                }
+                this.updateVisualControls();
+            }
+
+            updateBreadcrumb(element) {
+                const breadcrumbContainer = document.getElementById('element-breadcrumb');
+                breadcrumbContainer.innerHTML = '';
+                let currentElement = element;
+                let breadcrumbs = [];
+
+                while (currentElement && currentElement.tagName.toLowerCase() !== 'html') {
+                    const selector = this.generateSelector(currentElement);
+                    const tag = currentElement.tagName.toLowerCase();
+                    const id = currentElement.id ? `#${currentElement.id}` : '';
+                    const classes = Array.from(currentElement.classList).filter(c => c !== 'livecss-selected-element' && c !== 'element-highlight').map(c => `.${c}`).join('');
+                    
+                    const breadcrumbHtml = `<span class="breadcrumb-item" data-selector="${selector}">${tag}${id}${classes}</span>`;
+                    breadcrumbs.unshift(breadcrumbHtml);
+                    currentElement = currentElement.parentElement;
+                }
+
+                breadcrumbContainer.innerHTML = breadcrumbs.join(' &gt; ');
             }
 
             generateSelector(element) {
                 if (element.id) {
                     return '#' + element.id;
                 }
-                
-                if (element.className) {
-                    const classes = element.className.split(' ')
-                        .filter(cls => cls && cls !== 'element-highlight');
-                    if (classes.length > 0) {
-                        return '.' + classes[0];
-                    }
+
+                const classes = Array.from(element.classList)
+                    .filter(cls => cls && cls !== 'livecss-hover-highlight' && cls !== 'livecss-selection-highlight');
+
+                if (classes.length > 0) {
+                    return '.' + classes.join('.');
                 }
-                
+
                 return element.tagName.toLowerCase();
             }
 

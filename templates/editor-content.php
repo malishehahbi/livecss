@@ -9,6 +9,7 @@
 
         <main class="main-content">
             <aside class="editor-panel">
+                <section id="element-breadcrumb" class="breadcrumb-section"></section>
                 <section class="selector-section">
                     <input type="text" id="selector-input" class="selector-input" placeholder="Enter CSS selector (e.g., .my-class, #my-id)">
                     <div class="pseudo-buttons">

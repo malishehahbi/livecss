@@ -104,6 +104,27 @@
         padding: var(--spacing);
     }
 
+    .breadcrumb-section {
+        padding: 0.75rem var(--spacing);
+        background: hsl(var(--muted));
+        border-bottom: 1px solid hsl(var(--border));
+        font-size: 0.8rem;
+        color: hsl(var(--muted-foreground));
+        white-space: nowrap;
+        overflow-x: auto;
+    }
+
+    .breadcrumb-item {
+        cursor: pointer;
+        color: hsl(var(--accent-foreground));
+        transition: color 0.2s;
+    }
+
+    .breadcrumb-item:hover {
+        color: hsl(var(--foreground));
+        text-decoration: underline;
+    }
+
     .selector-input {
         width: 100%;
         padding: 0.625rem 0.75rem;
