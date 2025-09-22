@@ -222,7 +222,7 @@
                     const selector = this.generateSelector(currentElement);
                     const tag = currentElement.tagName.toLowerCase();
                     const id = currentElement.id ? `#${currentElement.id}` : '';
-                    const classes = Array.from(currentElement.classList).filter(c => c !== 'livecss-selected-element' && c !== 'element-highlight').map(c => `.${c}`).join('');
+                    const classes = Array.from(currentElement.classList).filter(c => c !== 'livecss-hover-highlight' && c !== 'livecss-selection-highlight').map(c => `.${c}`).join('');
                     
                     const breadcrumbHtml = `<span class="breadcrumb-item" data-selector="${selector}">${tag}${id}${classes}</span>`;
                     breadcrumbs.unshift(breadcrumbHtml);
