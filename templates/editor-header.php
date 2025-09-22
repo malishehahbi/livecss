@@ -50,6 +50,8 @@
         font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
         overflow: hidden;
     }
+    input, select, textarea {
+        color: black;}
 
     .editor-container {
         display: flex;
