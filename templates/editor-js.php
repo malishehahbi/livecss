@@ -219,12 +219,26 @@
                 let breadcrumbs = [];
 
                 while (currentElement && currentElement.tagName.toLowerCase() !== 'html') {
-                    const selector = this.generateSelector(currentElement);
                     const tag = currentElement.tagName.toLowerCase();
                     const id = currentElement.id ? `#${currentElement.id}` : '';
-                    const classes = Array.from(currentElement.classList).filter(c => c !== 'livecss-hover-highlight' && c !== 'livecss-selection-highlight').map(c => `.${c}`).join('');
-                    
-                    const breadcrumbHtml = `<span class="breadcrumb-item" data-selector="${selector}">${tag}${id}${classes}</span>`;
+                    const classes = Array.from(currentElement.classList)
+                        .filter(c => c !== 'livecss-hover-highlight' && c !== 'livecss-selection-highlight');
+
+                    let partsHtml = [];
+                    // Add tag name part
+                    partsHtml.push(`<span class="breadcrumb-item" data-selector="${tag}">${tag}</span>`);
+
+                    // Add ID part
+                    if (id) {
+                        partsHtml.push(`<span class="breadcrumb-item" data-selector="${id}">${id}</span>`);
+                    }
+
+                    // Add class parts
+                    classes.forEach(cls => {
+                        partsHtml.push(`<span class="breadcrumb-item" data-selector=".${cls}">.${cls}</span>`);
+                    });
+
+                    const breadcrumbHtml = `<span class="breadcrumb-part-group">${partsHtml.join('')}</span>`;
                     breadcrumbs.unshift(breadcrumbHtml);
                     currentElement = currentElement.parentElement;
                 }

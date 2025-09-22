@@ -114,15 +114,26 @@
         overflow-x: auto;
     }
 
+    .breadcrumb-part-group {
+        display: inline-block;
+    }
+
     .breadcrumb-item {
         cursor: pointer;
         color: hsl(var(--accent-foreground));
-        transition: color 0.2s;
+        transition: color 0.2s, background-color 0.2s;
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        margin: 0 1px;
+        display: inline-block;
+        border: 1px solid transparent;
     }
 
     .breadcrumb-item:hover {
         color: hsl(var(--foreground));
-        text-decoration: underline;
+        background-color: hsl(var(--accent));
+        border-color: hsl(var(--border));
+        text-decoration: none;
     }
 
     .selector-input {
