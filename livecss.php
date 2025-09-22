@@ -55,6 +55,7 @@ class LiveCSS {
         
         // Register AJAX handlers for saving CSS
         add_action('wp_ajax_livecss_save', array($this, 'save_css'));
+        add_action('wp_ajax_livecss_recreate_file', array($this, 'recreate_css_file'));
     }
 
     /**
@@ -171,6 +172,36 @@ class LiveCSS {
             wp_send_json_success('CSS saved successfully');
         }
         
+        exit;
+    }
+
+    /**
+     * Recreate CSS file via AJAX
+     */
+    public function recreate_css_file() {
+        // Check nonce and permissions
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'livecss_recreate_file') || !current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            exit;
+        }
+
+        // Set up the livecss directory and main.css file
+        $upload_dir = wp_upload_dir();
+        $livecss_dir = $upload_dir['basedir'] . '/livecss';
+
+        if (!file_exists($livecss_dir)) {
+            wp_mkdir_p($livecss_dir);
+        }
+
+        $css_file = $livecss_dir . '/main.css';
+        if (!file_exists($css_file)) {
+            if (file_put_contents($css_file, '/* LiveCSS Custom Styles */') === false) {
+                wp_send_json_error('Could not create CSS file. Check directory permissions.');
+                exit;
+            }
+        }
+
+        wp_send_json_success('File recreated successfully.');
         exit;
     }
 }

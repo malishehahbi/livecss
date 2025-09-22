@@ -485,7 +485,16 @@
                     if (data.success) {
                         this.showStatusMessage('CSS saved successfully!', 'success');
                     } else {
-                        this.showStatusMessage('Error saving CSS: ' + (data.data || 'Unknown error'), 'error');
+                        // Check for the specific file write error
+                        if (data.data && data.data === 'Failed to write to CSS file.') {
+                            if (confirm('Error: Could not save to main.css because the file may be missing. Would you like to try and recreate it?')) {
+                                this.recreateFile();
+                            } else {
+                                this.showStatusMessage('Save failed. Please check file permissions or recreate the file manually.', 'error');
+                            }
+                        } else {
+                            this.showStatusMessage('Error saving CSS: ' + (data.data || 'Unknown error'), 'error');
+                        }
                     }
                 })
                 .catch(error => {
@@ -502,6 +511,31 @@
                 setTimeout(() => {
                     statusEl.classList.remove('show');
                 }, 3000);
+            }
+
+            recreateFile() {
+                const formData = new FormData();
+                formData.append('action', 'livecss_recreate_file');
+                formData.append('nonce', <?php echo json_encode(wp_create_nonce('livecss_recreate_file')); ?>);
+
+                fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.showStatusMessage('File recreated! Retrying save...', 'success');
+                        // Retry saving the CSS now that the file exists
+                        this.saveCSS();
+                    } else {
+                        this.showStatusMessage('Error: Could not recreate file. ' + (data.data || ''), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error recreating file:', error);
+                    this.showStatusMessage('A critical error occurred while trying to recreate the file.', 'error');
+                });
             }
 
             // Helper methods for special properties
