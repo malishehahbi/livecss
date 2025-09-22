@@ -374,43 +374,40 @@
 
             generateCSS(options = { is_preview: false }) {
                 let css = '';
-                const important = options.is_preview ? ' !important' : '';
                 
                 for (const [selector, rules] of this.cssRules) {
                     if (rules.size === 0) continue;
                     
-                    css += `${selector} {
-`;
+                    css += `${selector} {\n`;
                     
-                    // Handle special combined properties
                     const combinedRules = new Map(rules);
                     
-                    // Handle transform properties
                     if (this.hasTransformProperties(rules)) {
                         const transformValue = this.buildTransformValue(rules);
                         if (transformValue) {
                             combinedRules.set('transform', transformValue);
                         }
-                        // Remove individual transform properties
                         this.removeTransformProperties(combinedRules);
                     }
                     
-                    // Handle filter properties
                     if (this.hasFilterProperties(rules)) {
                         const filterValue = this.buildFilterValue(rules);
                         if (filterValue) {
                             combinedRules.set('filter', filterValue);
                         }
-                        // Remove individual filter properties
                         this.removeFilterProperties(combinedRules);
                     }
                     
                     for (const [property, value] of combinedRules) {
-                        css += `  ${property}: ${value}${important};\n`;
+                        let finalLine = `  ${property}: ${value}`;
+                        if (options.is_preview && !value.includes('!important')) {
+                            finalLine += ' !important';
+                        }
+                        finalLine += ';\n';
+                        css += finalLine;
                     }
                     
-                    css += `}
-`;
+                    css += `}\n`;
                 }
                 
                 return css;
