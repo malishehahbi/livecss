@@ -124,6 +124,7 @@
                 // Visual controls
                 document.querySelectorAll('.control[data-property]').forEach(control => {
                     control.addEventListener('input', () => {
+                        console.log('1. Control input detected:', { property: control.dataset.property, value: control.value });
                         this.updateCSSProperty(control.dataset.property, control.value);
                     });
                 });
@@ -151,6 +152,7 @@
                 this.iframe = document.getElementById('preview-iframe');
                 
                 this.iframe.addEventListener('load', () => {
+                    console.log('A. Iframe has loaded.');
                     this.iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
                     
                     // Inject styles for element highlighting and selection
@@ -302,33 +304,47 @@
                 }
 
                 const selectorRules = this.cssRules.get(this.currentSelector);
-                
-                // Handle special combined properties
-                if (this.isTransformProperty(property)) {
-                    this.updateCombinedProperty(selectorRules, 'transform', this.buildTransformValue.bind(this));
-                } else if (this.isFilterProperty(property)) {
-                    this.updateCombinedProperty(selectorRules, 'filter', this.buildFilterValue.bind(this));
-                } else if (value && value.trim()) {
+
+                // First, update the individual property in the map
+                if (value && value.trim()) {
                     selectorRules.set(property, value.trim());
                 } else {
                     selectorRules.delete(property);
                 }
 
+                // Now, if it's a special property, rebuild the combined value
+                if (this.isTransformProperty(property)) {
+                    this.updateCombinedProperty(selectorRules, 'transform', this.buildTransformValue.bind(this));
+                } else if (this.isFilterProperty(property)) {
+                    this.updateCombinedProperty(selectorRules, 'filter', this.buildFilterValue.bind(this));
+                }
+
+                console.log('2. Updating internal CSS state for:', this.currentSelector);
                 this.updatePreview();
                 this.updateCodeEditor();
             }
 
             updatePreview() {
-                if (!this.iframeDoc) return;
-
-                let styleEl = this.iframeDoc.getElementById('livecss-custom-styles');
-                if (!styleEl) {
-                    styleEl = this.iframeDoc.createElement('style');
-                    styleEl.id = 'livecss-custom-styles';
-                    this.iframeDoc.head.appendChild(styleEl);
+                if (!this.iframeDoc) {
+                    console.error('3. ERROR: Cannot update preview because iframe is not ready.');
+                    return;
                 }
 
-                styleEl.textContent = this.generateCSS();
+                // Remove old style tag if it exists
+                const oldStyleEl = this.iframeDoc.getElementById('livecss-custom-styles');
+                if (oldStyleEl) {
+                    oldStyleEl.remove();
+                }
+
+                // Create and add a new one
+                const newStyleEl = this.iframeDoc.createElement('style');
+                newStyleEl.id = 'livecss-custom-styles';
+                
+                const css = this.generateCSS({ is_preview: true });
+                console.log('3. Updating preview with new CSS:', css);
+                newStyleEl.textContent = css;
+
+                this.iframeDoc.head.appendChild(newStyleEl);
             }
 
             updateCodeEditor() {
@@ -356,8 +372,9 @@
                 });
             }
 
-            generateCSS() {
+            generateCSS(options = { is_preview: false }) {
                 let css = '';
+                const important = options.is_preview ? ' !important' : '';
                 
                 for (const [selector, rules] of this.cssRules) {
                     if (rules.size === 0) continue;
@@ -389,8 +406,7 @@
                     }
                     
                     for (const [property, value] of combinedRules) {
-                        css += `  ${property}: ${value};
-`;
+                        css += `  ${property}: ${value}${important};\n`;
                     }
                     
                     css += `}
@@ -440,11 +456,18 @@
             }
 
             loadSavedCSS() {
-                const savedCSS = <?php echo json_encode(get_option('livecss_custom_css', '')); ?>;
+                <?php
+                    $upload_dir = wp_upload_dir();
+                    $css_file_path = $upload_dir['basedir'] . '/livecss/main.css';
+                    $saved_css = '';
+                    if (file_exists($css_file_path)) {
+                        $saved_css = file_get_contents($css_file_path);
+                    }
+                ?>
+                const savedCSS = <?php echo json_encode($saved_css); ?>;
                 if (savedCSS) {
                     this.parseCSS(savedCSS);
                     this.updateCodeEditor();
-                    this.updatePreview();
                 }
             }
 

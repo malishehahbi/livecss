@@ -727,7 +727,7 @@
             </aside>
 
             <main class="preview-area">
-                <iframe id="preview-iframe" class="preview-iframe" src="<?php echo remove_query_arg('csseditor'); ?>"></iframe>
+                <iframe id="preview-iframe" class="preview-iframe" src="<?php echo add_query_arg('livecss_preview', '1', remove_query_arg('csseditor')); ?>"></iframe>
             </main>
         </main>
     </div>

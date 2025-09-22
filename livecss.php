@@ -61,8 +61,21 @@ class LiveCSS {
      * Plugin activation
      */
     public function activate() {
-        // Create database table or options if needed
-        add_option('livecss_custom_css', '');
+        // Set up the livecss directory and main.css file
+        $upload_dir = wp_upload_dir();
+        $livecss_dir = $upload_dir['basedir'] . '/livecss';
+
+        if (!file_exists($livecss_dir)) {
+            wp_mkdir_p($livecss_dir);
+        }
+
+        $css_file = $livecss_dir . '/main.css';
+        if (!file_exists($css_file)) {
+            file_put_contents($css_file, '/* LiveCSS Custom Styles */');
+        }
+
+        // Remove the old database option
+        delete_option('livecss_custom_css');
     }
 
     /**
@@ -116,9 +129,19 @@ class LiveCSS {
      * Load saved CSS on the frontend
      */
     public function load_saved_css() {
-        $custom_css = get_option('livecss_custom_css', '');
-        if (!empty($custom_css)) {
-            echo '<style id="livecss-custom-styles">' . wp_strip_all_tags($custom_css) . '</style>';
+        // Don't load the saved CSS file in the editor preview iframe
+        if (isset($_GET['livecss_preview'])) {
+            return;
+        }
+
+        $upload_dir = wp_upload_dir();
+        $css_file_path = $upload_dir['basedir'] . '/livecss/main.css';
+        $css_file_url = $upload_dir['baseurl'] . '/livecss/main.css';
+
+        if (file_exists($css_file_path)) {
+            // Use file modification time as version for cache busting
+            $version = filemtime($css_file_path);
+            wp_enqueue_style('livecss-custom', $css_file_url, array(), $version);
         }
     }
 
@@ -135,10 +158,19 @@ class LiveCSS {
         // Get and sanitize the CSS
         $css = isset($_POST['css']) ? $_POST['css'] : '';
         
-        // Save to database
-        update_option('livecss_custom_css', $css);
+        // Get path to the CSS file
+        $upload_dir = wp_upload_dir();
+        $css_file = $upload_dir['basedir'] . '/livecss/main.css';
+
+        // Save to file
+        $result = file_put_contents($css_file, $css);
+
+        if ($result === false) {
+            wp_send_json_error('Failed to write to CSS file.');
+        } else {
+            wp_send_json_success('CSS saved successfully');
+        }
         
-        wp_send_json_success('CSS saved successfully');
         exit;
     }
 }
