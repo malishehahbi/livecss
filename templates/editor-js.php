@@ -123,8 +123,7 @@
 
                 // Visual controls
                 document.querySelectorAll('.control[data-property]').forEach(control => {
-                    const event = control.type === 'range' ? 'input' : 'change';
-                    control.addEventListener(event, () => {
+                    control.addEventListener('input', () => {
                         this.updateCSSProperty(control.dataset.property, control.value);
                     });
                 });
