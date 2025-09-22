@@ -487,11 +487,13 @@
                     } else {
                         // Check for the specific file write error
                         if (data.data && data.data === 'Failed to write to CSS file.') {
-                            if (confirm('Error: Could not save to main.css because the file may be missing. Would you like to try and recreate it?')) {
-                                this.recreateFile();
-                            } else {
-                                this.showStatusMessage('Save failed. Please check file permissions or recreate the file manually.', 'error');
-                            }
+                            this.showConfirmationPopup('Error: Could not save because the css file may be missing. Would you like to try and recreate it?', (confirmed) => {
+                                if (confirmed) {
+                                    this.recreateFile();
+                                } else {
+                                    this.showStatusMessage('Save failed. Please check file permissions or recreate the file manually.', 'error');
+                                }
+                            });
                         } else {
                             this.showStatusMessage('Error saving CSS: ' + (data.data || 'Unknown error'), 'error');
                         }
@@ -501,6 +503,39 @@
                     console.error('Error:', error);
                     this.showStatusMessage('Error saving CSS. Please try again.', 'error');
                 });
+            }
+
+            showConfirmationPopup(message, callback) {
+                const popup = document.getElementById('confirmation-popup');
+                const messageEl = document.getElementById('popup-message');
+                const yesButton = document.getElementById('popup-button-yes');
+                const noButton = document.getElementById('popup-button-no');
+
+                messageEl.textContent = message;
+
+                const handleYes = () => {
+                    this.hideConfirmationPopup();
+                    callback(true);
+                    yesButton.removeEventListener('click', handleYes);
+                    noButton.removeEventListener('click', handleNo);
+                };
+
+                const handleNo = () => {
+                    this.hideConfirmationPopup();
+                    callback(false);
+                    yesButton.removeEventListener('click', handleYes);
+                    noButton.removeEventListener('click', handleNo);
+                };
+
+                yesButton.addEventListener('click', handleYes);
+                noButton.addEventListener('click', handleNo);
+
+                popup.classList.add('visible');
+            }
+
+            hideConfirmationPopup() {
+                const popup = document.getElementById('confirmation-popup');
+                popup.classList.remove('visible');
             }
 
             showStatusMessage(message, type = 'success') {

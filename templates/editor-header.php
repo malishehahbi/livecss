@@ -426,6 +426,57 @@
         color: hsl(var(--destructive-foreground));
         border-color: hsl(var(--destructive));
     }
+
+    /* Confirmation Popup */
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s;
+    }
+
+    .popup-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .popup-content {
+        background: hsl(var(--background));
+        padding: 1.5rem 2rem;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 450px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        transform: scale(0.95);
+        transition: all 0.2s;
+    }
+
+    .popup-overlay.visible .popup-content {
+        transform: scale(1);
+    }
+
+    .popup-content p {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        color: hsl(var(--foreground));
+    }
+
+    .popup-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
 </style>
 </head>
 <body>

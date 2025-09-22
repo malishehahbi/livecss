@@ -733,3 +733,13 @@
     </div>
 
     <div id="status-message" class="status-message"></div>
+
+    <div id="confirmation-popup" class="popup-overlay">
+        <div class="popup-content">
+            <p id="popup-message"></p>
+            <div class="popup-actions">
+                <button id="popup-button-yes" class="button button-primary">Yes</button>
+                <button id="popup-button-no" class="button">No</button>
+            </div>
+        </div>
+    </div>
