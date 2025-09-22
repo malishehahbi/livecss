@@ -136,11 +136,14 @@
 
                 // Breadcrumb clicks
                 document.getElementById('element-breadcrumb').addEventListener('click', (e) => {
-                    if (e.target.dataset.selector) {
+                    if (e.target.classList.contains('breadcrumb-item') && e.target.dataset.selector) {
                         const selector = e.target.dataset.selector;
-                        document.getElementById('selector-input').value = selector;
-                        this.currentSelector = selector;
-                        this.updateVisualControls();
+                        const selectorInput = document.getElementById('selector-input');
+                        selectorInput.value = selector;
+
+                        // Manually trigger input event to update selection highlight
+                        const inputEvent = new Event('input', { bubbles: true });
+                        selectorInput.dispatchEvent(inputEvent);
                     }
                 });
             }
@@ -154,8 +157,8 @@
                     // Inject styles for element highlighting and selection
                     const style = this.iframeDoc.createElement('style');
                     style.textContent = `
-                        .livecss-hover-highlight { outline: 2px dashed #88ddff !important; cursor: pointer; }
-                        .livecss-selection-highlight { outline: 2px solid #88ddff !important; }
+                        .livecss-hover-highlight { outline: 2px dashed rgba(136, 221, 255, 0.43) !important; cursor: pointer; }
+                        .livecss-selection-highlight { outline: 2px solid rgb(180, 230, 250) !important; }
                     `;
                     this.iframeDoc.head.appendChild(style);
 
