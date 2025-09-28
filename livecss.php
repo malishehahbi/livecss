@@ -3,7 +3,7 @@
  * Plugin Name: LiveCSS
  * Plugin URI: https://example.com/livecss
  * Description: A visual CSS editor with real-time preview for WordPress sites.
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: LiveCSS Team
  * Author URI: https://example.com
  * Text Domain: livecss
@@ -50,19 +50,35 @@ class LiveCSS {
             add_action('template_redirect', array($this, 'load_css_editor'));
         }
         
-        // Load saved CSS on the frontend
-        add_action('wp_head', array($this, 'load_saved_css'));
+        // Load saved CSS on the frontend with high priority to ensure it's in head
+        add_action('wp_head', array($this, 'load_saved_css'), 5);
         
         // Register AJAX handlers for saving CSS
         add_action('wp_ajax_livecss_save', array($this, 'save_css'));
+        add_action('wp_ajax_livecss_recreate_file', array($this, 'recreate_css_file'));
     }
 
     /**
      * Plugin activation
      */
     public function activate() {
-        // Create database table or options if needed
-        add_option('livecss_custom_css', '');
+        // Set up the livecss directory and main.css file
+        $upload_dir = wp_upload_dir();
+        $livecss_dir = $upload_dir['basedir'] . '/livecss';
+
+        if (!file_exists($livecss_dir)) {
+            wp_mkdir_p($livecss_dir);
+        }
+
+        $css_file = $livecss_dir . '/main.css';
+        if (!file_exists($css_file)) {
+            // Create minified initial content
+            $initial_css = $this->minify_css('/* LiveCSS Custom Styles */');
+            file_put_contents($css_file, $initial_css);
+        }
+
+        // Remove the old database option
+        delete_option('livecss_custom_css');
     }
 
     /**
@@ -116,10 +132,43 @@ class LiveCSS {
      * Load saved CSS on the frontend
      */
     public function load_saved_css() {
-        $custom_css = get_option('livecss_custom_css', '');
-        if (!empty($custom_css)) {
-            echo '<style id="livecss-custom-styles">' . wp_strip_all_tags($custom_css) . '</style>';
+        // Don't load the saved CSS file in the editor preview iframe
+        if (isset($_GET['livecss_preview'])) {
+            return;
         }
+
+        $upload_dir = wp_upload_dir();
+        $css_file_path = $upload_dir['basedir'] . '/livecss/main.css';
+        $css_file_url = $upload_dir['baseurl'] . '/livecss/main.css';
+
+        if (file_exists($css_file_path) && filesize($css_file_path) > 0) {
+            // Use file modification time as version for cache busting
+            $version = filemtime($css_file_path);
+            // Enqueue with high priority and explicit media attribute
+            wp_enqueue_style('livecss-custom', $css_file_url, array(), $version, 'all');
+        }
+    }
+
+    /**
+     * Minify CSS content
+     */
+    private function minify_css($css) {
+        // Remove comments
+        $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
+        
+        // Remove whitespace
+        $css = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css);
+        
+        // Remove unnecessary spaces around selectors and properties
+        $css = preg_replace('/\s*{\s*/', '{', $css);
+        $css = preg_replace('/;\s*}/', '}', $css);
+        $css = preg_replace('/;\s*/', ';', $css);
+        $css = preg_replace('/}\s*/', '}', $css);
+        $css = preg_replace('/,\s*/', ',', $css);
+        $css = preg_replace('/:\s*/', ':', $css);
+        
+        // Remove leading/trailing whitespace
+        return trim($css);
     }
 
     /**
@@ -135,10 +184,54 @@ class LiveCSS {
         // Get and sanitize the CSS
         $css = isset($_POST['css']) ? $_POST['css'] : '';
         
-        // Save to database
-        update_option('livecss_custom_css', $css);
+        // Minify the CSS
+        $minified_css = $this->minify_css($css);
         
-        wp_send_json_success('CSS saved successfully');
+        // Get path to the CSS file
+        $upload_dir = wp_upload_dir();
+        $css_file = $upload_dir['basedir'] . '/livecss/main.css';
+
+        // Save minified CSS to file
+        $result = file_put_contents($css_file, $minified_css);
+
+        if ($result === false) {
+            wp_send_json_error('Failed to write to CSS file.');
+        } else {
+            wp_send_json_success('CSS saved successfully');
+        }
+        
+        exit;
+    }
+
+    /**
+     * Recreate CSS file via AJAX
+     */
+    public function recreate_css_file() {
+        // Check nonce and permissions
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'livecss_recreate_file') || !current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            exit;
+        }
+
+        // Set up the livecss directory and main.css file
+        $upload_dir = wp_upload_dir();
+        $livecss_dir = $upload_dir['basedir'] . '/livecss';
+
+        if (!file_exists($livecss_dir)) {
+            wp_mkdir_p($livecss_dir);
+        }
+
+        $css_file = $livecss_dir . '/main.css';
+        if (!file_exists($css_file)) {
+            // Create minified initial content
+            $initial_css = $this->minify_css('/* LiveCSS Custom Styles */');
+            if (file_put_contents($css_file, $initial_css) === false) {
+                wp_send_json_error('Could not create CSS file. Check directory permissions.');
+                exit;
+            }
+        }
+
+        wp_send_json_success('File recreated successfully.');
         exit;
     }
 }
