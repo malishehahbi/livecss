@@ -39,9 +39,6 @@ class LiveCSS_Class_Manager {
         // Enqueue Gutenberg assets
         add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
         
-        // Add admin menu
-        add_action('admin_menu', array($this, 'add_admin_menu'));
-        
         // Register user meta for settings
         $this->register_user_meta();
     }
@@ -261,42 +258,7 @@ class LiveCSS_Class_Manager {
             'pluginUrl' => LIVECSS_PLUGIN_URL
         ));
     }
-    
-    /**
-     * Add admin menu
-     */
-    public function add_admin_menu() {
-        add_submenu_page(
-            'tools.php',
-            __('CSS Class Manager', 'livecss'),
-            __('CSS Class Manager', 'livecss'),
-            'manage_options',
-            'livecss-class-manager',
-            array($this, 'admin_page')
-        );
-    }
-    
-    /**
-     * Admin page
-     */
-    public function admin_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php _e('CSS Class Manager', 'livecss'); ?></h1>
-            <div id="livecss-class-manager-admin"></div>
-        </div>
-        
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simple admin interface will be rendered here
-            const container = document.getElementById('livecss-class-manager-admin');
-            if (container && window.LiveCSSClassManagerAdmin) {
-                window.LiveCSSClassManagerAdmin.render(container);
-            }
-        });
-        </script>
-        <?php
-    }
+
 
 }
 

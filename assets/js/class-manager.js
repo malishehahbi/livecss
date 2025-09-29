@@ -164,10 +164,14 @@
             userSettings: {}
         };
         
-        // Get extracted classes and user-defined classes only (no defaults)
-        const extractedClasses = extractPageClasses();
+        // Get user-defined classes from API and extracted classes from page
         const userClasses = pluginData.cssClasses || [];
-        const allClasses = [...extractedClasses, ...userClasses];
+        const extractedClasses = extractPageClasses();
+        
+        // Combine and deduplicate classes (user classes take priority)
+        const userClassNames = userClasses.map(cls => cls.name);
+        const filteredExtracted = extractedClasses.filter(cls => !userClassNames.includes(cls.name));
+        const allClasses = [...userClasses, ...filteredExtracted];
 
         // Simple store with error handling
         let cssClasses = [];
@@ -185,6 +189,13 @@
             getClasses: () => cssClasses,
             addClass: (classData) => {
                 try {
+                    // Ensure user-added classes have proper IDs (not extracted_)
+                    if (!classData.id || classData.id.startsWith('extracted_')) {
+                        classData.id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    }
+                    
+                    // Remove any existing class with same name to avoid duplicates
+                    cssClasses = cssClasses.filter(cls => cls.name !== classData.name);
                     cssClasses.push(classData);
                     store.notify();
                 } catch (error) {
@@ -193,6 +204,11 @@
             },
             deleteClass: (id) => {
                 try {
+                    // Only delete user classes from API (not extracted ones)
+                    if (id && !id.startsWith('extracted_')) {
+                        deleteClassFromAPI(id);
+                    }
+                    
                     cssClasses = cssClasses.filter(c => c.id !== id);
                     store.notify();
                 } catch (error) {
@@ -201,9 +217,15 @@
             },
             refreshClasses: () => {
                 try {
-                    const extractedClasses = extractPageClasses();
+                    // Get fresh user classes from API
                     const userClasses = cssClasses.filter(cls => !cls.id.startsWith('extracted_'));
-                    cssClasses = [...extractedClasses, ...userClasses];
+                    const extractedClasses = extractPageClasses();
+                    
+                    // Merge without duplicates (user classes take priority)
+                    const userClassNames = userClasses.map(cls => cls.name);
+                    const filteredExtracted = extractedClasses.filter(cls => !userClassNames.includes(cls.name));
+                    
+                    cssClasses = [...userClasses, ...filteredExtracted];
                     store.notify();
                 } catch (error) {
                     console.error('Error refreshing classes:', error);
@@ -241,6 +263,45 @@
                     console.error('API Error:', error);
                     return { error: error.message };
                 }
+            }
+        };
+
+        // API functions for class management
+        const saveClassToAPI = async (classData) => {
+            try {
+                const response = await fetch(pluginData.restUrl + 'css-classes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': pluginData.nonce
+                    },
+                    body: JSON.stringify(classData)
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to save class to API');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error saving class to API:', error);
+            }
+        };
+        
+        const deleteClassFromAPI = async (classId) => {
+            try {
+                const response = await fetch(pluginData.restUrl + `css-classes/${classId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-WP-Nonce': pluginData.nonce
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to delete class from API');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error deleting class from API:', error);
             }
         };
 
@@ -298,10 +359,15 @@
                     const exists = classes.find(cls => cls.name === trimmedClass);
                     if (!exists) {
                         const classData = {
-                            id: 'new_' + Date.now(),
-                            name: trimmedClass
+                            id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                            name: trimmedClass,
+                            description: 'User-added class',
+                            created: new Date().toISOString()
                         };
                         store.addClass(classData);
+                        
+                        // Save to database via API
+                        saveClassToAPI(classData);
                     }
                 }
                 setInputValue('');
@@ -574,11 +640,16 @@
                 }
 
                 const classData = {
-                    id: 'class_' + Date.now(),
-                    name: newClassName.trim()
+                    id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    name: newClassName.trim(),
+                    description: 'User-added class',
+                    created: new Date().toISOString()
                 };
 
                 store.addClass(classData);
+                
+                // Save to database via API
+                saveClassToAPI(classData);
                 setNewClassName('');
                 showNotice(__('Class added successfully', 'livecss'));
             };
