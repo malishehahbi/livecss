@@ -36,6 +36,9 @@ class LiveCSS {
         // Register activation and deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+        
+        // Load CSS Class Manager early
+        add_action('plugins_loaded', array($this, 'load_class_manager'), 5);
     }
 
     /**
@@ -56,6 +59,10 @@ class LiveCSS {
         // Register AJAX handlers for saving CSS
         add_action('wp_ajax_livecss_save', array($this, 'save_css'));
         add_action('wp_ajax_livecss_recreate_file', array($this, 'recreate_css_file'));
+        
+        // Add body classes functionality
+        add_filter('body_class', array($this, 'add_body_classes'));
+        add_action('wp_ajax_livecss_save_body_classes', array($this, 'save_body_classes'));
     }
 
     /**
@@ -86,6 +93,17 @@ class LiveCSS {
      */
     public function deactivate() {
         // Cleanup if needed
+    }
+    
+    /**
+     * Load CSS Class Manager
+     */
+    public function load_class_manager() {
+        // Include the CSS Class Manager
+        $class_manager_file = LIVECSS_PLUGIN_DIR . 'includes/class-css-class-manager.php';
+        if (file_exists($class_manager_file)) {
+            include_once $class_manager_file;
+        }
     }
 
     /**
@@ -232,6 +250,35 @@ class LiveCSS {
         }
 
         wp_send_json_success('File recreated successfully.');
+        exit;
+    }
+    
+    /**
+     * Add custom body classes
+     */
+    public function add_body_classes($classes) {
+        $custom_classes = get_option('livecss_body_classes', '');
+        if (!empty($custom_classes)) {
+            $custom_classes_array = array_filter(array_map('trim', explode(' ', $custom_classes)));
+            $classes = array_merge($classes, $custom_classes_array);
+        }
+        return $classes;
+    }
+    
+    /**
+     * Save body classes via AJAX
+     */
+    public function save_body_classes() {
+        // Check nonce and permissions
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'livecss_body_classes') || !current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+            exit;
+        }
+        
+        $body_classes = isset($_POST['body_classes']) ? sanitize_text_field($_POST['body_classes']) : '';
+        update_option('livecss_body_classes', $body_classes);
+        
+        wp_send_json_success('Body classes saved successfully');
         exit;
     }
 }
