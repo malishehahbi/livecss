@@ -343,6 +343,9 @@ editor{
     #tab-visual {
             zoom: var(--zoom-mini);
         }
+    #tab-code{
+        padding: calc(var(--spacing) * 0.5);
+    }
 
     .tab-content.hidden {
         display: none;
