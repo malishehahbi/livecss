@@ -339,8 +339,10 @@ editor{
         overflow-y: auto;
         padding: calc(var(--spacing) * 1.25);
         height: 100%;
-        zoom: var(--zoom-mini);
     }
+    #tab-visual {
+            zoom: var(--zoom-mini);
+        }
 
     .tab-content.hidden {
         display: none;
@@ -534,7 +536,7 @@ editor{
     .CodeMirror {
         height: 100% !important;
         min-height: 450px;
-        font-size: 1rem; /* Make code text easier to read */
+        font-size: 1em; /* Make code text easier to read */
     }
     
     .CodeMirror-scroll {
