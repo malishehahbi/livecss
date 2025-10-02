@@ -17,6 +17,7 @@
     $preview_query['livecss_preview'] = '1';
     $preview_src = $path . '?' . http_build_query($preview_query);
     ?>
+    <editor>
     <div class="editor-container" role="application" aria-label="LiveCSS visual editor">
             <header class="header" role="banner">
                 <h1>LiveCSS Editor</h1>
@@ -770,3 +771,4 @@
             </div>
         </div>
     </div>
+    </editor>

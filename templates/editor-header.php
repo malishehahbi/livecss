@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveCSS Editor</title>
-    <?php wp_head(); ?>
+    <!-- <?php wp_head(); ?> -->
 <style>
-    body{
-        margin-top: -32px !important;
-    }
-    #wpadminbar {
+    
+#wpadminbar {
         display: none !important;
     }
-    :root {
+    body{
+        margin: 0;
+        padding: 0;
+    }
+    
+editor{
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    
+    /* :root { */
         --background: 0 0% 100%;
         --foreground: 0 0% 3.9%;
         --card: 0 0% 100%;
@@ -34,7 +40,8 @@
         --ring: 0 0% 3.9%;
         --radius: 0.6rem;
         --spacing: 1.25rem; /* Larger base spacing for a more spacious UI */
-    }
+        --zoom-mini: 0.75;
+    /* } */
 
     * {
         box-sizing: border-box;
@@ -47,8 +54,7 @@
         height: 100vh;
         color: hsl(var(--foreground));
         background-color: hsl(var(--background));
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-        overflow: hidden;
+      overflow: hidden;
     }
     .editor-container {
         display: flex;
@@ -65,6 +71,7 @@
         justify-content: space-between;
         align-items: center;
         height: 72px; /* Taller header for better touch targets */
+        zoom: var(--zoom-mini);
     }
 
     .header h1 {
@@ -160,6 +167,7 @@
         background: hsl(var(--background));
         border-bottom: 1px solid hsl(var(--border));
         padding: var(--spacing);
+        zoom: var(--zoom-mini);
     }
 
     .breadcrumb-section {
@@ -291,6 +299,7 @@
         position: sticky; /* Keep tabs visible while scrolling controls */
         top: 0;
         z-index: 3;
+        zoom: var(--zoom-mini);
     }
 
     .tab {
@@ -330,6 +339,7 @@
         overflow-y: auto;
         padding: calc(var(--spacing) * 1.25);
         height: 100%;
+        zoom: var(--zoom-mini);
     }
 
     .tab-content.hidden {
@@ -646,7 +656,7 @@
         display: flex;
         justify-content: center;
         gap: 1rem;
-    }
+    }}
 </style>
 </head>
 <body>
