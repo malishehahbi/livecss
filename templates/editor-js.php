@@ -580,6 +580,18 @@
                             this.saveCSS();
                         });
 
+                        // Preview button
+                        const previewButton = document.getElementById('preview-button');
+                        const exitPreviewButton = document.getElementById('exit-preview-button');
+                        if (previewButton && exitPreviewButton) {
+                            previewButton.addEventListener('click', () => {
+                                this.togglePreviewMode(true);
+                            });
+                            exitPreviewButton.addEventListener('click', () => {
+                                this.togglePreviewMode(false);
+                            });
+                        }
+
                         // Device toggles
                         const deviceButtons = document.querySelectorAll('.device-btn');
                         deviceButtons.forEach(btn => {
@@ -614,6 +626,14 @@
                                 e.preventDefault();
                                 if (this.searchFunctionality) {
                                     this.searchFunctionality.toggleSearch();
+                                }
+                            }
+                            
+                            // Escape to exit preview mode
+                            if (e.key === 'Escape') {
+                                const editorContainer = document.querySelector('.editor-container');
+                                if (editorContainer?.classList.contains('preview-mode')) {
+                                    this.togglePreviewMode(false);
                                 }
                             }
                         });
@@ -733,6 +753,11 @@
                 if (!this.iframeDoc) return;
 
                 this.iframeDoc.body.addEventListener('mouseover', (e) => {
+                    // Don't highlight in preview mode
+                    const editorContainer = document.querySelector('.editor-container');
+                    if (editorContainer?.classList.contains('preview-mode')) {
+                        return;
+                    }
                     e.target.classList.add('livecss-hover-highlight');
                 });
 
@@ -741,6 +766,12 @@
                 });
 
                 this.iframeDoc.body.addEventListener('click', (e) => {
+                    // Don't handle clicks in preview mode
+                    const editorContainer = document.querySelector('.editor-container');
+                    if (editorContainer?.classList.contains('preview-mode')) {
+                        return;
+                    }
+                    
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -877,6 +908,66 @@
                 if (!isActive) {
                     header.classList.add('active');
                     content.classList.add('active');
+                }
+            }
+
+            togglePreviewMode(enable) {
+                const editorContainer = document.querySelector('.editor-container');
+                const exitPreviewButton = document.getElementById('exit-preview-button');
+                const previewButton = document.getElementById('preview-button');
+
+                if (enable) {
+                    // Enter preview mode
+                    editorContainer?.classList.add('preview-mode');
+                    exitPreviewButton?.classList.remove('hidden');
+                    previewButton?.classList.add('hidden');
+                    
+                    // Remove all selection and hover highlights in preview mode
+                    if (this.iframeDoc) {
+                        // Remove selection highlights
+                        const selectedElements = this.iframeDoc.querySelectorAll('.livecss-selection-highlight');
+                        selectedElements.forEach(el => {
+                            el.classList.remove('livecss-selection-highlight');
+                        });
+                        
+                        // Remove hover highlights
+                        const hoverElements = this.iframeDoc.querySelectorAll('.livecss-hover-highlight');
+                        hoverElements.forEach(el => {
+                            el.classList.remove('livecss-hover-highlight');
+                        });
+                        
+                        // Disable hover effects in preview mode
+                        const style = this.iframeDoc.createElement('style');
+                        style.id = 'livecss-preview-mode-styles';
+                        style.textContent = `
+                            .livecss-selection-highlight,
+                            .livecss-hover-highlight {
+                                outline: none !important;
+                                border: none !important;
+                            }
+                        `;
+                        this.iframeDoc.head.appendChild(style);
+                    }
+                    
+                    console.log('[LiveCSSEditor] Preview mode enabled');
+                } else {
+                    // Exit preview mode
+                    editorContainer?.classList.remove('preview-mode');
+                    exitPreviewButton?.classList.add('hidden');
+                    previewButton?.classList.remove('hidden');
+                    
+                    // Remove preview mode styles
+                    if (this.iframeDoc) {
+                        const previewStyles = this.iframeDoc.getElementById('livecss-preview-mode-styles');
+                        if (previewStyles) {
+                            previewStyles.remove();
+                        }
+                        
+                        // Restore selection highlights
+                        this.updateSelectionFromInput();
+                    }
+                    
+                    console.log('[LiveCSSEditor] Preview mode disabled');
                 }
             }
 

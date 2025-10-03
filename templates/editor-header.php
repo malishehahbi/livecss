@@ -86,6 +86,101 @@ editor{
         gap: var(--spacing);
     }
 
+    /* Preview Button */
+    .button-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) - 2px);
+        font-weight: 500;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .button-preview:hover {
+        background: hsl(var(--accent));
+        color: hsl(var(--accent-foreground));
+        border-color: hsl(var(--foreground) / 0.2);
+    }
+
+    .button-preview svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Preview Mode - Hide Editor Panel */
+    .editor-container.preview-mode .editor-panel {
+        display: none !important;
+    }
+
+    .editor-container.preview-mode .sidebar-resizer {
+        display: none !important;
+    }
+
+    .editor-container.preview-mode .header {
+        display: none !important;
+    }
+
+    .editor-container.preview-mode .preview-wrapper {
+        width: 100% !important;
+        height: 100vh !important;
+        flex: 1 !important;
+    }
+
+    .editor-container.preview-mode .main-content {
+        padding: 0 !important;
+    }
+
+    /* Hide all editor highlights and outlines in preview mode */
+    .editor-container.preview-mode iframe .livecss-selection-highlight,
+    .editor-container.preview-mode iframe .livecss-hover-highlight {
+        outline: none !important;
+        border: none !important;
+    }
+
+    /* Floating Exit Preview Button */
+    .exit-preview-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) - 2px);
+        cursor: pointer;
+    }
+
+    .exit-preview-button:hover {
+        background: hsl(var(--primary) / 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .exit-preview-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .exit-preview-button svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2.5;
+    }
+
+    .exit-preview-button.hidden {
+        display: none;
+    }
+
     /* Device toggle */
     .device-toggle {
         display: flex;

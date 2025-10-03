@@ -27,6 +27,13 @@
                     <button type="button" id="btn-mobile" class="device-btn" data-device="mobile" title="Mobile">Mobile</button>
                 </div>
                 <div class="header-actions">
+                    <button id="preview-button" class="button button-preview" title="Preview full-screen (no editor panels)" aria-label="Toggle preview mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>Preview</span>
+                    </button>
                     <button id="save-button" class="button button-primary" title="Save your CSS changes (Ctrl+S)" aria-label="Save changes">Save Changes</button>
                     <a href="<?php echo $exit_url; ?>" class="button button-danger" title="Exit without editing" aria-label="Exit editor">Exit Editor</a>
                 </div>
@@ -1252,6 +1259,15 @@
                 <iframe id="preview-iframe" class="preview-iframe" title="Live preview" src="<?php echo $preview_src; ?>"></iframe>
             </main>
         </main>
+
+        <!-- Floating Preview Exit Button -->
+        <button id="exit-preview-button" class="exit-preview-button hidden" title="Exit preview mode" aria-label="Exit preview mode">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span>Exit Preview</span>
+        </button>
     </div>
 
     <div id="status-message" class="status-message"></div>
