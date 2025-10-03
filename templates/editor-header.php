@@ -334,6 +334,36 @@ editor{
         background: hsl(var(--foreground));
     }
 
+    /* Search Toggle Button */
+    .search-toggle-btn {
+        margin-left: auto;
+        padding: 0.5rem 0.75rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: hsl(var(--muted-foreground));
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: calc(var(--radius) - 2px);
+    }
+
+    .search-toggle-btn:hover {
+        background: hsl(var(--accent));
+        color: hsl(var(--foreground));
+    }
+
+    .search-toggle-btn.active {
+        background: hsl(var(--secondary));
+        color: hsl(var(--foreground));
+    }
+
+    .search-toggle-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
     .tab-content {
         flex: 1;
         overflow-y: auto;
@@ -345,6 +375,181 @@ editor{
         }
     #tab-code{
         padding: calc(var(--spacing) * 0.5);
+    }
+
+    /* Search Bar Styles */
+    .search-container {
+        background: hsl(var(--muted) / 0.3);
+        border-bottom: 1px solid hsl(var(--border));
+        padding: 0.5rem var(--spacing);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        max-height: 200px;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        opacity: 1;
+    }
+
+    .search-container.collapsed {
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        border-bottom: none;
+        opacity: 0;
+    }
+
+    /* Force hide search containers when not in correct tab */
+    .search-container.hidden {
+        display: none !important;
+    }
+
+    .search-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 0.625rem;
+        color: hsl(var(--muted-foreground));
+        pointer-events: none;
+        width: 14px;
+        height: 14px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.5rem 2rem 0.5rem 2rem;
+        border: 1px solid hsl(var(--input));
+        border-radius: calc(var(--radius) - 2px);
+        font-size: 0.875rem;
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        transition: border-color 0.2s, box-shadow 0.2s;
+        height: 32px;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: hsl(var(--ring));
+        box-shadow: 0 0 0 1px hsl(var(--ring));
+    }
+
+    .search-input::placeholder {
+        color: hsl(var(--muted-foreground));
+    }
+
+    .search-clear {
+        position: absolute;
+        right: 0.375rem;
+        padding: 0.25rem;
+        background: transparent;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        color: hsl(var(--muted-foreground));
+        transition: background-color 0.2s, color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-clear:hover {
+        background: hsl(var(--muted));
+        color: hsl(var(--foreground));
+    }
+
+    .search-results-info {
+        margin-top: 0.375rem;
+        font-size: 0.8rem;
+        color: hsl(var(--muted-foreground));
+        text-align: center;
+    }
+
+    /* Code Editor Search Navigation */
+    .search-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.375rem;
+        padding-top: 0.375rem;
+        border-top: 1px solid hsl(var(--border) / 0.5);
+    }
+
+    .search-results-count {
+        font-size: 0.8rem;
+        color: hsl(var(--muted-foreground));
+        font-weight: 500;
+    }
+
+    .search-nav-buttons {
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .search-nav-btn {
+        padding: 0.25rem 0.375rem;
+        background: hsl(var(--secondary));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) - 4px);
+        cursor: pointer;
+        color: hsl(var(--foreground));
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        min-height: 28px;
+    }
+
+    .search-nav-btn:hover:not(:disabled) {
+        background: hsl(var(--accent));
+    }
+
+    .search-nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Highlight matched properties in Visual Editor */
+    .control-group.search-match {
+        background: rgba(255, 235, 59, 0.15);
+        border-left: 3px solid #fbc02d;
+        padding-left: calc(var(--spacing) - 3px);
+        animation: search-highlight 0.3s ease;
+    }
+
+    .control-group.search-hidden {
+        display: none !important;
+    }
+
+    .accordion-item.search-hidden {
+        display: none !important;
+    }
+
+    /* Keep accordion expanded during search */
+    .accordion-content.search-expanded {
+        max-height: none !important;
+        display: block !important;
+    }
+
+    @keyframes search-highlight {
+        0% { background: rgba(255, 235, 59, 0.4); }
+        100% { background: rgba(255, 235, 59, 0.15); }
+    }
+
+    /* CodeMirror search highlighting */
+    .cm-search-match {
+        background-color: rgba(255, 235, 59, 0.3) !important;
+        border-bottom: 2px solid #fbc02d;
+    }
+
+    .cm-search-match-selected {
+        background-color: rgba(255, 193, 7, 0.5) !important;
+        border-bottom: 2px solid #f57c00;
     }
 
     .tab-content.hidden {

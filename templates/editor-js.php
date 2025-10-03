@@ -19,6 +19,9 @@
 <!-- Spotlight Mode for Code Editor -->
 <script src="<?php echo plugins_url('assets/js/spotlight-mode.js', dirname(__FILE__)); ?>"></script>
 
+<!-- Search Functionality -->
+<script src="<?php echo plugins_url('assets/js/search-functionality.js', dirname(__FILE__)); ?>"></script>
+
    <!-- Loading Overlay -->
     <div id="livecss-loader" class="livecss-loader">
         <div class="livecss-loader-content">
@@ -180,6 +183,7 @@
                 this.iframeDoc = null;
                 this.codeEditor = null;
                 this.spotlightMode = null;
+                this.searchFunctionality = null;
                 this.isUpdatingFromCode = false;
                 this.selectorSuggestions = [];
                 this.suggestActiveIndex = -1;
@@ -458,6 +462,14 @@
                                     this.spotlightMode.init(this.codeEditor);
                                     console.log('[LiveCSSEditor] SpotlightMode initialized');
                                 }
+                                
+                                // Initialize Search Functionality
+                                if (typeof SearchFunctionality !== 'undefined') {
+                                    this.searchFunctionality = new SearchFunctionality(this);
+                                    this.searchFunctionality.init(this.codeEditor);
+                                    console.log('[LiveCSSEditor] SearchFunctionality initialized');
+                                }
+                                
                                 resolve();
                             } else {
                                 reject(new Error('CodeMirror editor initialization failed'));
@@ -594,6 +606,17 @@
                                 }
                             });
                         }
+
+                        // Global keyboard shortcuts
+                        document.addEventListener('keydown', (e) => {
+                            // Ctrl+F or Cmd+F to toggle search
+                            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                                e.preventDefault();
+                                if (this.searchFunctionality) {
+                                    this.searchFunctionality.toggleSearch();
+                                }
+                            }
+                        });
 
                         // Verify event listeners are set up
                         setTimeout(() => {
@@ -813,6 +836,17 @@
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.toggle('hidden', content.dataset.tab !== tabName);
                 });
+
+                // Update search container visibility and close search
+                if (this.searchFunctionality) {
+                    // Close search when switching tabs
+                    if (this.searchFunctionality.isSearchVisible) {
+                        this.searchFunctionality.isSearchVisible = false;
+                        this.searchFunctionality.searchToggleBtn?.classList.remove('active');
+                    }
+                    // Update which container is shown/hidden
+                    this.searchFunctionality.updateSearchVisibility(tabName);
+                }
 
                 if (tabName === 'code' && this.codeEditor) {
                     console.log('Refreshing CodeMirror editor');

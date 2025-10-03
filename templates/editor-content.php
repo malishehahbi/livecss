@@ -50,7 +50,63 @@
                 <nav class="tabs" role="tablist" aria-label="Editor mode tabs">
                     <button id="tab-btn-visual" class="tab active" data-tab="visual" role="tab" aria-selected="true" aria-controls="tab-visual">Visual Editor</button>
                     <button id="tab-btn-code" class="tab" data-tab="code" role="tab" aria-selected="false" aria-controls="tab-code">Code Editor</button>
+                    <button id="search-toggle-btn" class="search-toggle-btn" title="Toggle Search (Ctrl+F)" aria-label="Toggle search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
                 </nav>
+
+                <!-- Search bar for Visual Editor -->
+                <div class="search-container collapsed" id="visual-search-container">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="visual-search-input" class="search-input" placeholder="Search properties..." />
+                        <button id="visual-search-clear" class="search-clear hidden" title="Clear search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="search-results-info hidden" id="visual-search-info"></div>
+                </div>
+
+                <!-- Search bar for Code Editor (hidden initially) -->
+                <div class="search-container hidden collapsed" id="code-search-container">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="code-search-input" class="search-input" placeholder="Search in CSS..." />
+                        <button id="code-search-clear" class="search-clear hidden" title="Clear search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="search-navigation hidden" id="code-search-nav">
+                        <span class="search-results-count" id="code-search-count">0 of 0</span>
+                        <div class="search-nav-buttons">
+                            <button id="code-search-prev" class="search-nav-btn" title="Previous match (Shift+Enter)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </button>
+                            <button id="code-search-next" class="search-nav-btn" title="Next match (Enter)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="tab-content" id="tab-visual" data-tab="visual" role="tabpanel" aria-labelledby="tab-btn-visual">
                     <div class="accordion-item">
