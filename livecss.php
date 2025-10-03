@@ -119,11 +119,12 @@ class LiveCSS {
         $current_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $current_url = remove_query_arg('csseditor', $current_url);
         $editor_url = add_query_arg('csseditor', 'run', $current_url);
-        
+
+        $icon = '<style> #wpadminbar #wp-admin-bar-livecss-edit > .ab-item:before { content: "\f533";}</style>';
         // Add the button
         $wp_admin_bar->add_node(array(
             'id'    => 'livecss-edit',
-            'title' => 'Edit CSS',
+            'title' => $icon . ' Edit CSS',
             'href'  => $editor_url,
             'meta'  => array(
                 'title' => 'Edit CSS with LiveCSS',
