@@ -180,6 +180,39 @@
                                     <option value="">Default</option>
                                     <option value="normal">Normal</option>
                                     <option value="small-caps">Small Caps</option>
+                                    <option value="all-small-caps">All Small Caps</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Text Indent</label>
+                                <input type="text" class="control" data-property="text-indent" placeholder="20px, 2em, 5%">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Word Break</label>
+                                <select class="control" data-property="word-break">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="break-all">Break All</option>
+                                    <option value="keep-all">Keep All</option>
+                                    <option value="break-word">Break Word</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Overflow Wrap</label>
+                                <select class="control" data-property="overflow-wrap">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="break-word">Break Word</option>
+                                    <option value="anywhere">Anywhere</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Hyphens</label>
+                                <select class="control" data-property="hyphens">
+                                    <option value="">Default</option>
+                                    <option value="none">None</option>
+                                    <option value="manual">Manual</option>
+                                    <option value="auto">Auto</option>
                                 </select>
                             </div>
                         </div>
@@ -195,6 +228,10 @@
                             <div class="control-group">
                                 <label class="control-label">Background Image</label>
                                 <input type="text" class="control" data-property="background-image" placeholder="url('image.jpg')">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Background Gradient</label>
+                                <input type="text" class="control" data-property="background-image" placeholder="linear-gradient(to right, #ff0000, #0000ff)">
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Background Size</label>
@@ -237,6 +274,7 @@
                                     <option value="border-box">Border Box</option>
                                     <option value="padding-box">Padding Box</option>
                                     <option value="content-box">Content Box</option>
+                                    <option value="text">Text (Gradient Text)</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -267,6 +305,10 @@
                                     <option value="color">Color</option>
                                     <option value="luminosity">Luminosity</option>
                                 </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Clip Path</label>
+                                <input type="text" class="control" data-property="clip-path" placeholder="circle(50%), polygon(0 0, 100% 0, 100% 100%)">
                             </div>
                         </div>
                     </div>
@@ -465,6 +507,22 @@
                                 </select>
                             </div>
                             <div class="control-group">
+                                <label class="control-label">Align Self</label>
+                                <select class="control" data-property="align-self">
+                                    <option value="">Default</option>
+                                    <option value="auto">Auto</option>
+                                    <option value="flex-start">Flex Start</option>
+                                    <option value="flex-end">Flex End</option>
+                                    <option value="center">Center</option>
+                                    <option value="baseline">Baseline</option>
+                                    <option value="stretch">Stretch</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Order</label>
+                                <input type="text" class="control" data-property="order" placeholder="0, 1, -1">
+                            </div>
+                            <div class="control-group">
                                 <label class="control-label">Flex Grow</label>
                                 <input type="text" class="control" data-property="flex-grow" placeholder="0, 1, 2">
                             </div>
@@ -503,6 +561,25 @@
                             <div class="control-group">
                                 <label class="control-label">Column Gap</label>
                                 <input type="text" class="control" data-property="column-gap" placeholder="10px, 1em">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Grid Auto Flow</label>
+                                <select class="control" data-property="grid-auto-flow">
+                                    <option value="">Default</option>
+                                    <option value="row">Row</option>
+                                    <option value="column">Column</option>
+                                    <option value="dense">Dense</option>
+                                    <option value="row dense">Row Dense</option>
+                                    <option value="column dense">Column Dense</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Grid Auto Columns</label>
+                                <input type="text" class="control" data-property="grid-auto-columns" placeholder="auto, 1fr, 100px">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Grid Auto Rows</label>
+                                <input type="text" class="control" data-property="grid-auto-rows" placeholder="auto, 1fr, 100px">
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Visibility</label>
@@ -613,6 +690,8 @@
                                     <option value="ease-in-out">Ease In Out</option>
                                     <option value="step-start">Step Start</option>
                                     <option value="step-end">Step End</option>
+                                    <option value="steps(4, end)">Steps (4, end)</option>
+                                    <option value="cubic-bezier(0.4, 0, 0.2, 1)">Cubic Bezier</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -642,6 +721,8 @@
                                     <option value="ease-in-out">Ease In Out</option>
                                     <option value="step-start">Step Start</option>
                                     <option value="step-end">Step End</option>
+                                    <option value="steps(4, end)">Steps (4, end)</option>
+                                    <option value="cubic-bezier(0.4, 0, 0.2, 1)">Cubic Bezier</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -678,6 +759,30 @@
                                     <option value="">Default</option>
                                     <option value="running">Running</option>
                                     <option value="paused">Paused</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Will Change</label>
+                                <select class="control" data-property="will-change">
+                                    <option value="">Default</option>
+                                    <option value="auto">Auto</option>
+                                    <option value="transform">Transform</option>
+                                    <option value="opacity">Opacity</option>
+                                    <option value="scroll-position">Scroll Position</option>
+                                    <option value="contents">Contents</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Contain</label>
+                                <select class="control" data-property="contain">
+                                    <option value="">Default</option>
+                                    <option value="none">None</option>
+                                    <option value="layout">Layout</option>
+                                    <option value="style">Style</option>
+                                    <option value="paint">Paint</option>
+                                    <option value="size">Size</option>
+                                    <option value="content">Content</option>
+                                    <option value="strict">Strict</option>
                                 </select>
                             </div>
                         </div>
@@ -746,6 +851,26 @@
                             <div class="control-group">
                                 <label class="control-label">Rotate</label>
                                 <input type="text" class="control" data-property="rotate" placeholder="45deg, 1turn">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Rotate X</label>
+                                <input type="text" class="control" data-property="rotateX" placeholder="45deg">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Rotate Y</label>
+                                <input type="text" class="control" data-property="rotateY" placeholder="45deg">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Rotate Z</label>
+                                <input type="text" class="control" data-property="rotateZ" placeholder="45deg">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Rotate 3D</label>
+                                <input type="text" class="control" data-property="rotate3d" placeholder="1, 1, 0, 45deg">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Perspective</label>
+                                <input type="text" class="control" data-property="perspective" placeholder="1000px, 500px">
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Scale</label>
@@ -972,6 +1097,18 @@
                             <div class="control-group">
                                 <label class="control-label">Left Border Color</label>
                                 <input type="color" class="control" data-property="border-left-color">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Border Image</label>
+                                <input type="text" class="control" data-property="border-image" placeholder="url('border.png') 30 round">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Border Collapse</label>
+                                <select class="control" data-property="border-collapse">
+                                    <option value="">Default</option>
+                                    <option value="separate">Separate</option>
+                                    <option value="collapse">Collapse</option>
+                                </select>
                             </div>
                         </div>
                     </div>
