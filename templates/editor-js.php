@@ -197,6 +197,15 @@
                 this.loader = new LiveCSSLoader();
                 this.isInitialized = false;
                 
+                // Unsaved changes tracking
+                this.hasUnsavedChanges = false;
+                this.initialCSSState = null;
+                
+                // History for undo/redo
+                this.history = [];
+                this.historyIndex = -1;
+                this.maxHistorySize = 50;
+                
                 this.init();
             }
 
@@ -450,6 +459,10 @@
                                 this.parseCSS(this.codeEditor.getValue());
                                 this.updatePreview();
                                 this.updateVisualControls();
+                                
+                                // Track changes and capture history
+                                this.markAsChanged();
+                                this.captureHistory();
                             }
                         });
 
@@ -636,7 +649,41 @@
                                     this.togglePreviewMode(false);
                                 }
                             }
+                            
+                            // Ctrl+Z for undo
+                            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+                                e.preventDefault();
+                                this.undo();
+                            }
+                            
+                            // Ctrl+Y or Ctrl+Shift+Z for redo
+                            if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
+                                e.preventDefault();
+                                this.redo();
+                            }
                         });
+
+                        // Warn before leaving with unsaved changes
+                        window.addEventListener('beforeunload', (e) => {
+                            if (this.hasUnsavedChanges) {
+                                e.preventDefault();
+                                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                                return e.returnValue;
+                            }
+                        });
+
+                        // Intercept Exit Editor button
+                        const exitButton = document.querySelector('a.button-danger');
+                        if (exitButton) {
+                            exitButton.addEventListener('click', (e) => {
+                                if (this.hasUnsavedChanges) {
+                                    const confirmExit = confirm('You have unsaved changes. Do you really want to exit without saving?');
+                                    if (!confirmExit) {
+                                        e.preventDefault();
+                                    }
+                                }
+                            });
+                        }
 
                         // Verify event listeners are set up
                         setTimeout(() => {
@@ -996,6 +1043,11 @@
                 }
 
                 console.log('2. Updating internal CSS state for:', this.currentSelector);
+                
+                // Track changes and capture history
+                this.markAsChanged();
+                this.captureHistory();
+                
                 this.updatePreview();
                 this.updateCodeEditor();
             }
@@ -1538,12 +1590,20 @@
                             this.parseCSS(savedCSS);
                             this.updateCodeEditor();
                             
+                            // Store initial state for unsaved changes detection
+                            this.initialCSSState = savedCSS;
+                            
+                            // Initialize history with the loaded state
+                            this.captureHistory();
+                            
                             // Force update preview with loaded CSS
                             setTimeout(() => {
                                 this.updatePreview();
                             }, 100);
                         } else {
                             console.log('No saved CSS found or CSS is empty');
+                            // Store empty initial state
+                            this.initialCSSState = '';
                         }
                         resolve();
                     } catch (error) {
@@ -1570,6 +1630,13 @@
                 .then(data => {
                     if (data.success) {
                         this.showStatusMessage('CSS saved successfully!', 'success');
+                        
+                        // Clear unsaved changes flag after successful save
+                        this.hasUnsavedChanges = false;
+                        this.updateSaveButtonState();
+                        
+                        // Store the current state as initial state
+                        this.initialCSSState = this.generateCSS();
                     } else {
                         // Check for the specific file write error
                         if (data.data && data.data === 'Failed to write to CSS file.') {
@@ -1657,6 +1724,140 @@
                     console.error('Error recreating file:', error);
                     this.showStatusMessage('A critical error occurred while trying to recreate the file.', 'error');
                 });
+            }
+
+            // ===== Change Tracking and History Management =====
+            
+            markAsChanged() {
+                if (!this.hasUnsavedChanges) {
+                    this.hasUnsavedChanges = true;
+                    this.updateSaveButtonState();
+                    console.log('[LiveCSSEditor] Marked as changed');
+                }
+            }
+            
+            updateSaveButtonState() {
+                const saveButton = document.getElementById('save-button');
+                if (saveButton) {
+                    if (this.hasUnsavedChanges) {
+                        saveButton.classList.add('has-changes');
+                        saveButton.setAttribute('title', 'You have unsaved changes');
+                    } else {
+                        saveButton.classList.remove('has-changes');
+                        saveButton.setAttribute('title', 'Save CSS');
+                    }
+                }
+            }
+            
+            captureHistory() {
+                // Debounce history capture to avoid too many snapshots
+                clearTimeout(this.historyTimeout);
+                this.historyTimeout = setTimeout(() => {
+                    const currentState = this.serializeState();
+                    
+                    // Don't capture if state hasn't changed
+                    if (this.history.length > 0 && 
+                        JSON.stringify(currentState) === JSON.stringify(this.history[this.historyIndex])) {
+                        return;
+                    }
+                    
+                    // Remove any history after current index (when undoing then making new changes)
+                    this.history = this.history.slice(0, this.historyIndex + 1);
+                    
+                    // Add new state
+                    this.history.push(currentState);
+                    
+                    // Limit history size
+                    if (this.history.length > this.maxHistorySize) {
+                        this.history.shift();
+                    } else {
+                        this.historyIndex++;
+                    }
+                    
+                    this.updateHistoryButtons();
+                    console.log('[LiveCSSEditor] History captured. Index:', this.historyIndex, 'Size:', this.history.length);
+                }, 500); // 500ms debounce
+            }
+            
+            serializeState() {
+                return {
+                    css: this.generateCSS(),
+                    currentSelector: this.currentSelector,
+                    currentDevice: this.currentDevice,
+                    timestamp: Date.now()
+                };
+            }
+            
+            restoreState(state) {
+                if (!state) return;
+                
+                // Temporarily disable change tracking during restoration
+                const wasTracking = this.hasUnsavedChanges;
+                
+                // Restore CSS
+                this.parseCSS(state.css);
+                this.updateCodeEditor();
+                this.updatePreview();
+                
+                // Restore selector
+                if (state.currentSelector) {
+                    const selectorInput = document.getElementById('selector-input');
+                    if (selectorInput) {
+                        selectorInput.value = state.currentSelector;
+                        this.currentSelector = state.currentSelector;
+                        this.updateSelectionFromInput();
+                        this.updateVisualControls();
+                    }
+                }
+                
+                // Restore device
+                if (state.currentDevice && state.currentDevice !== this.currentDevice) {
+                    this.setDevice(state.currentDevice);
+                }
+                
+                // Keep change tracking state
+                this.hasUnsavedChanges = wasTracking;
+                
+                console.log('[LiveCSSEditor] State restored');
+            }
+            
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.restoreState(this.history[this.historyIndex]);
+                    this.updateHistoryButtons();
+                    this.showStatusMessage('Undo successful', 'success');
+                    console.log('[LiveCSSEditor] Undo to index:', this.historyIndex);
+                } else {
+                    console.log('[LiveCSSEditor] Cannot undo - at beginning of history');
+                }
+            }
+            
+            redo() {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.restoreState(this.history[this.historyIndex]);
+                    this.updateHistoryButtons();
+                    this.showStatusMessage('Redo successful', 'success');
+                    console.log('[LiveCSSEditor] Redo to index:', this.historyIndex);
+                } else {
+                    console.log('[LiveCSSEditor] Cannot redo - at end of history');
+                }
+            }
+            
+            updateHistoryButtons() {
+                // This will be called to enable/disable undo/redo buttons if you add them to the UI
+                const canUndo = this.historyIndex > 0;
+                const canRedo = this.historyIndex < this.history.length - 1;
+                
+                console.log('[LiveCSSEditor] History state - Can undo:', canUndo, 'Can redo:', canRedo);
+                
+                // If you add undo/redo buttons to the UI, update them here
+                // Example:
+                // const undoBtn = document.getElementById('undo-button');
+                // const redoBtn = document.getElementById('redo-button');
+                // if (undoBtn) undoBtn.disabled = !canUndo;
+                // if (redoBtn) redoBtn.disabled = !canRedo;
             }
 
             // Helper methods for special properties

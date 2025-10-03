@@ -760,6 +760,45 @@ editor{
         border-color: hsl(var(--primary) / 0.9);
     }
 
+    /* Save button with unsaved changes indicator */
+    .button-primary.has-changes {
+        position: relative;
+        animation: pulse-border 2s ease-in-out infinite;
+    }
+
+    .button-primary.has-changes::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 12px;
+        height: 12px;
+        background: #ef4444; /* red-500 */
+        border: 2px solid hsl(var(--background));
+        border-radius: 50%;
+        animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-border {
+        0%, 100% {
+            border-color: hsl(var(--primary));
+        }
+        50% {
+            border-color: #ef4444;
+        }
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+    }
+
     .button-danger {
         background: hsl(var(--destructive));
         color: hsl(var(--destructive-foreground));
