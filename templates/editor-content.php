@@ -136,6 +136,52 @@
                                 <label class="control-label">Word Spacing</label>
                                 <input type="text" class="control" data-property="word-spacing" placeholder="normal, 2px, 0.1em">
                             </div>
+                            <div class="control-group">
+                                <label class="control-label">Text Shadow</label>
+                                <input type="text" class="control" data-property="text-shadow" placeholder="2px 2px 4px rgba(0,0,0,0.5)">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Text Overflow</label>
+                                <select class="control" data-property="text-overflow">
+                                    <option value="">Default</option>
+                                    <option value="clip">Clip</option>
+                                    <option value="ellipsis">Ellipsis</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">White Space</label>
+                                <select class="control" data-property="white-space">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="nowrap">No Wrap</option>
+                                    <option value="pre">Pre</option>
+                                    <option value="pre-wrap">Pre Wrap</option>
+                                    <option value="pre-line">Pre Line</option>
+                                    <option value="break-spaces">Break Spaces</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Vertical Align</label>
+                                <select class="control" data-property="vertical-align">
+                                    <option value="">Default</option>
+                                    <option value="baseline">Baseline</option>
+                                    <option value="top">Top</option>
+                                    <option value="middle">Middle</option>
+                                    <option value="bottom">Bottom</option>
+                                    <option value="text-top">Text Top</option>
+                                    <option value="text-bottom">Text Bottom</option>
+                                    <option value="sub">Sub</option>
+                                    <option value="super">Super</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Font Variant</label>
+                                <select class="control" data-property="font-variant">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="small-caps">Small Caps</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -201,6 +247,68 @@
                                     <option value="padding-box">Padding Box</option>
                                     <option value="content-box">Content Box</option>
                                 </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Background Blend Mode</label>
+                                <select class="control" data-property="background-blend-mode">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="multiply">Multiply</option>
+                                    <option value="screen">Screen</option>
+                                    <option value="overlay">Overlay</option>
+                                    <option value="darken">Darken</option>
+                                    <option value="lighten">Lighten</option>
+                                    <option value="color-dodge">Color Dodge</option>
+                                    <option value="color-burn">Color Burn</option>
+                                    <option value="difference">Difference</option>
+                                    <option value="exclusion">Exclusion</option>
+                                    <option value="hue">Hue</option>
+                                    <option value="saturation">Saturation</option>
+                                    <option value="color">Color</option>
+                                    <option value="luminosity">Luminosity</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">Sizing</div>
+                        <div class="accordion-content">
+                            <div class="control-group">
+                                <label class="control-label">Width</label>
+                                <input type="text" class="control" data-property="width" placeholder="100px, 50%, auto">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Height</label>
+                                <input type="text" class="control" data-property="height" placeholder="100px, 50%, auto">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Min Width</label>
+                                <input type="text" class="control" data-property="min-width" placeholder="100px, 50%">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Max Width</label>
+                                <input type="text" class="control" data-property="max-width" placeholder="1200px, 100%">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Min Height</label>
+                                <input type="text" class="control" data-property="min-height" placeholder="100px, 50vh">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Max Height</label>
+                                <input type="text" class="control" data-property="max-height" placeholder="800px, 100vh">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Box Sizing</label>
+                                <select class="control" data-property="box-sizing">
+                                    <option value="">Default</option>
+                                    <option value="content-box">Content Box</option>
+                                    <option value="border-box">Border Box</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Aspect Ratio</label>
+                                <input type="text" class="control" data-property="aspect-ratio" placeholder="16/9, 1/1, auto">
                             </div>
                         </div>
                     </div>
@@ -396,6 +504,49 @@
                                 <label class="control-label">Column Gap</label>
                                 <input type="text" class="control" data-property="column-gap" placeholder="10px, 1em">
                             </div>
+                            <div class="control-group">
+                                <label class="control-label">Visibility</label>
+                                <select class="control" data-property="visibility">
+                                    <option value="">Default</option>
+                                    <option value="visible">Visible</option>
+                                    <option value="hidden">Hidden</option>
+                                    <option value="collapse">Collapse</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Cursor</label>
+                                <select class="control" data-property="cursor">
+                                    <option value="">Default</option>
+                                    <option value="auto">Auto</option>
+                                    <option value="pointer">Pointer</option>
+                                    <option value="default">Default</option>
+                                    <option value="text">Text</option>
+                                    <option value="move">Move</option>
+                                    <option value="wait">Wait</option>
+                                    <option value="help">Help</option>
+                                    <option value="not-allowed">Not Allowed</option>
+                                    <option value="grab">Grab</option>
+                                    <option value="grabbing">Grabbing</option>
+                                    <option value="crosshair">Crosshair</option>
+                                    <option value="zoom-in">Zoom In</option>
+                                    <option value="zoom-out">Zoom Out</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Object Fit</label>
+                                <select class="control" data-property="object-fit">
+                                    <option value="">Default</option>
+                                    <option value="fill">Fill</option>
+                                    <option value="contain">Contain</option>
+                                    <option value="cover">Cover</option>
+                                    <option value="none">None</option>
+                                    <option value="scale-down">Scale Down</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Object Position</label>
+                                <input type="text" class="control" data-property="object-position" placeholder="center, 50% 50%">
+                            </div>
                         </div>
                     </div>
 
@@ -435,6 +586,103 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">Transitions & Animations</div>
+                        <div class="accordion-content">
+                            <div class="control-group">
+                                <label class="control-label">Transition</label>
+                                <input type="text" class="control" data-property="transition" placeholder="all 0.3s ease">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Transition Property</label>
+                                <input type="text" class="control" data-property="transition-property" placeholder="all, opacity, transform">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Transition Duration</label>
+                                <input type="text" class="control" data-property="transition-duration" placeholder="0.3s, 300ms">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Transition Timing Function</label>
+                                <select class="control" data-property="transition-timing-function">
+                                    <option value="">Default</option>
+                                    <option value="ease">Ease</option>
+                                    <option value="linear">Linear</option>
+                                    <option value="ease-in">Ease In</option>
+                                    <option value="ease-out">Ease Out</option>
+                                    <option value="ease-in-out">Ease In Out</option>
+                                    <option value="step-start">Step Start</option>
+                                    <option value="step-end">Step End</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Transition Delay</label>
+                                <input type="text" class="control" data-property="transition-delay" placeholder="0s, 100ms">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation</label>
+                                <input type="text" class="control" data-property="animation" placeholder="name 1s ease infinite">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Name</label>
+                                <input type="text" class="control" data-property="animation-name" placeholder="fadeIn, slideUp">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Duration</label>
+                                <input type="text" class="control" data-property="animation-duration" placeholder="1s, 500ms">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Timing Function</label>
+                                <select class="control" data-property="animation-timing-function">
+                                    <option value="">Default</option>
+                                    <option value="ease">Ease</option>
+                                    <option value="linear">Linear</option>
+                                    <option value="ease-in">Ease In</option>
+                                    <option value="ease-out">Ease Out</option>
+                                    <option value="ease-in-out">Ease In Out</option>
+                                    <option value="step-start">Step Start</option>
+                                    <option value="step-end">Step End</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Delay</label>
+                                <input type="text" class="control" data-property="animation-delay" placeholder="0s, 100ms">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Iteration Count</label>
+                                <input type="text" class="control" data-property="animation-iteration-count" placeholder="1, infinite, 3">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Direction</label>
+                                <select class="control" data-property="animation-direction">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="reverse">Reverse</option>
+                                    <option value="alternate">Alternate</option>
+                                    <option value="alternate-reverse">Alternate Reverse</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Fill Mode</label>
+                                <select class="control" data-property="animation-fill-mode">
+                                    <option value="">Default</option>
+                                    <option value="none">None</option>
+                                    <option value="forwards">Forwards</option>
+                                    <option value="backwards">Backwards</option>
+                                    <option value="both">Both</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Animation Play State</label>
+                                <select class="control" data-property="animation-play-state">
+                                    <option value="">Default</option>
+                                    <option value="running">Running</option>
+                                    <option value="paused">Paused</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="accordion-item">
                         <div class="accordion-header">Filters</div>
                         <div class="accordion-content">
@@ -729,6 +977,39 @@
                     </div>
 
                     <div class="accordion-item">
+                        <div class="accordion-header">Outline</div>
+                        <div class="accordion-content">
+                            <div class="control-group">
+                                <label class="control-label">Outline Style</label>
+                                <select class="control" data-property="outline-style">
+                                    <option value="">Default</option>
+                                    <option value="solid">Solid</option>
+                                    <option value="dashed">Dashed</option>
+                                    <option value="dotted">Dotted</option>
+                                    <option value="double">Double</option>
+                                    <option value="groove">Groove</option>
+                                    <option value="ridge">Ridge</option>
+                                    <option value="inset">Inset</option>
+                                    <option value="outset">Outset</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Outline Color</label>
+                                <input type="color" class="control" data-property="outline-color">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Outline Width</label>
+                                <input type="text" class="control" data-property="outline-width" placeholder="1px, 2px, thin, medium, thick">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Outline Offset</label>
+                                <input type="text" class="control" data-property="outline-offset" placeholder="2px, 5px">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
                         <div class="accordion-header">Effects</div>
                         <div class="accordion-content">
                             <div class="control-group">
@@ -737,11 +1018,31 @@
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Opacity</label>
-                                <input type="range" class="control" data-property="opacity" min="0" max="1" step="0.1">
+                                <input type="range" class="control" data-property="opacity" min="0" max="1" step="0.01">
                             </div>
                             <div class="control-group">
-                                <label class="control-label">Transform</label>
-                                <input type="text" class="control" data-property="transform" placeholder="rotate(45deg), scale(1.2)">
+                                <label class="control-label">Mix Blend Mode</label>
+                                <select class="control" data-property="mix-blend-mode">
+                                    <option value="">Default</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="multiply">Multiply</option>
+                                    <option value="screen">Screen</option>
+                                    <option value="overlay">Overlay</option>
+                                    <option value="darken">Darken</option>
+                                    <option value="lighten">Lighten</option>
+                                    <option value="color-dodge">Color Dodge</option>
+                                    <option value="color-burn">Color Burn</option>
+                                    <option value="difference">Difference</option>
+                                    <option value="exclusion">Exclusion</option>
+                                    <option value="hue">Hue</option>
+                                    <option value="saturation">Saturation</option>
+                                    <option value="color">Color</option>
+                                    <option value="luminosity">Luminosity</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Backdrop Filter</label>
+                                <input type="text" class="control" data-property="backdrop-filter" placeholder="blur(10px), brightness(1.5)">
                             </div>
                         </div>
                     </div>
