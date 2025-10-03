@@ -1539,13 +1539,28 @@
             applyPreviewDevice() {
                 const iframe = document.getElementById('preview-iframe');
                 if (!iframe) return;
+                
+                // CRITICAL: ALL devices use FIXED widths - NO responsive behavior
+                // Desktop: Large fixed width (simulates full desktop website)
+                // Tablet/Mobile: Their respective fixed widths
+                // Iframe NEVER changes size with browser window - ONLY with toggle buttons
+                
                 if (this.currentDevice === 'desktop') {
-                    iframe.style.width = '100%';
+                    // Desktop: Fixed large width (typical desktop screen)
+                    iframe.style.width = '1920px';
+                    iframe.style.minWidth = '1920px';
+                    iframe.style.maxWidth = '1920px';
                 } else if (this.currentDevice === 'tablet') {
                     iframe.style.width = '1024px';
-                } else {
+                    iframe.style.minWidth = '1024px';
+                    iframe.style.maxWidth = '1024px';
+                } else { // mobile
                     iframe.style.width = '640px';
+                    iframe.style.minWidth = '640px';
+                    iframe.style.maxWidth = '640px';
                 }
+                
+                console.log(`[LiveCSSEditor] Device: ${this.currentDevice} | Fixed width: ${iframe.style.width} | STATIC (non-responsive)`);
             }
 
             getScopedSelectorKey(selector, scope = this.currentDevice) {

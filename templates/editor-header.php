@@ -814,17 +814,28 @@ editor{
         flex: 1;
         position: relative;
         background: hsl(var(--background));
+        overflow: auto; /* Allow scrolling if iframe is wider than viewport */
+        display: flex; 
+        align-items: stretch; 
+        justify-content: center;
     }
 
     .preview-iframe {
-        width: 100%;
+        /* 
+         * CRITICAL: Iframe is COMPLETELY NON-RESPONSIVE
+         * Width is set ONLY by JavaScript applyPreviewDevice()
+         * Desktop: Large fixed width (1920px) - NO browser window resizing
+         * Tablet: 1024px fixed
+         * Mobile: 640px fixed
+         * The iframe NEVER responds to browser window size changes
+         */
+        width: 1920px;  /* Default desktop width - STATIC, NOT RESPONSIVE */
+        flex: 0 0 auto; /* Never grow or shrink */
         height: 100%;
         border: none;
+        display: block; /* Prevent extra space below iframe */
+        min-height: 100%;
     }
-
-    /* Center iframe when a fixed width is applied for tablet/mobile preview */
-    .preview-area { display: flex; align-items: stretch; justify-content: center; }
-    .preview-iframe { flex: 0 0 auto; }
 
     /* Usage dots */
     .usage-dot {
@@ -890,18 +901,11 @@ editor{
         outline-offset: -2px;
     }
 
-    @media (max-width: 768px) {
-        .main-content {
-            flex-direction: column;
-        }
-
-        .editor-panel {
-            width: 100%;
-            height: 60%;
-            border-right: none;
-            border-bottom: 1px solid hsl(var(--border));
-        }
-    }
+    /* 
+     * IMPORTANT: No responsive @media queries for the editor layout
+     * The iframe size is controlled ONLY by the device toggle buttons
+     * This ensures consistent behavior regardless of browser window size
+     */
 
     .status-message {
         position: fixed;
