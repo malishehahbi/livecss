@@ -12,6 +12,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/edit/closebrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/edit/closetag.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/edit/matchbrackets.min.js"></script>
+
+<!-- Property Dependencies Manager -->
+<script src="<?php echo plugins_url('assets/js/property-dependencies.js', dirname(__FILE__)); ?>"></script>
+
    <!-- Loading Overlay -->
     <div id="livecss-loader" class="livecss-loader">
         <div class="livecss-loader-content">

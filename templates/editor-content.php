@@ -233,7 +233,7 @@
                                 <label class="control-label">Background Gradient</label>
                                 <input type="text" class="control" data-property="background-image" placeholder="linear-gradient(to right, #ff0000, #0000ff)">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Size</label>
                                 <select class="control" data-property="background-size">
                                     <option value="">Default</option>
@@ -242,11 +242,11 @@
                                     <option value="100%">100%</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Position</label>
                                 <input type="text" class="control" data-property="background-position" placeholder="center, 10px 20px">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Repeat</label>
                                 <select class="control" data-property="background-repeat">
                                     <option value="">Default</option>
@@ -258,7 +258,7 @@
                                     <option value="round">Round</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Attachment</label>
                                 <select class="control" data-property="background-attachment">
                                     <option value="">Default</option>
@@ -267,7 +267,7 @@
                                     <option value="local">Local</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Clip</label>
                                 <select class="control" data-property="background-clip">
                                     <option value="">Default</option>
@@ -277,7 +277,7 @@
                                     <option value="text">Text (Gradient Text)</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Origin</label>
                                 <select class="control" data-property="background-origin">
                                     <option value="">Default</option>
@@ -286,7 +286,7 @@
                                     <option value="content-box">Content Box</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="background-image" data-depends-value="!">
                                 <label class="control-label">Background Blend Mode</label>
                                 <select class="control" data-property="background-blend-mode">
                                     <option value="">Default</option>
@@ -383,23 +383,23 @@
                                     <option value="sticky">Sticky</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="position" data-depends-value="!static,!">
                                 <label class="control-label">Top</label>
                                 <input type="text" class="control" data-property="top" placeholder="10px, 1em, 50%">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="position" data-depends-value="!static,!">
                                 <label class="control-label">Right</label>
                                 <input type="text" class="control" data-property="right" placeholder="10px, 1em, 50%">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="position" data-depends-value="!static,!">
                                 <label class="control-label">Bottom</label>
                                 <input type="text" class="control" data-property="bottom" placeholder="10px, 1em, 50%">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="position" data-depends-value="!static,!">
                                 <label class="control-label">Left</label>
                                 <input type="text" class="control" data-property="left" placeholder="10px, 1em, 50%">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="!flex,!inline-flex,!grid,!inline-grid">
                                 <label class="control-label">Float</label>
                                 <select class="control" data-property="float">
                                     <option value="">Default</option>
@@ -408,7 +408,7 @@
                                     <option value="none">None</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="!flex,!inline-flex,!grid,!inline-grid">
                                 <label class="control-label">Clear</label>
                                 <select class="control" data-property="clear">
                                     <option value="">Default</option>
@@ -448,11 +448,11 @@
                                     <option value="auto">Auto</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="position" data-depends-value="!static,!">
                                 <label class="control-label">Z-Index</label>
                                 <input type="text" class="control" data-property="z-index" placeholder="1, 10, 999">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex">
                                 <label class="control-label">Flex Direction</label>
                                 <select class="control" data-property="flex-direction">
                                     <option value="">Default</option>
@@ -462,7 +462,7 @@
                                     <option value="column-reverse">Column Reverse</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex">
                                 <label class="control-label">Flex Wrap</label>
                                 <select class="control" data-property="flex-wrap">
                                     <option value="">Default</option>
@@ -471,7 +471,7 @@
                                     <option value="wrap-reverse">Wrap Reverse</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Justify Content</label>
                                 <select class="control" data-property="justify-content">
                                     <option value="">Default</option>
@@ -483,7 +483,7 @@
                                     <option value="space-evenly">Space Evenly</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Align Items</label>
                                 <select class="control" data-property="align-items">
                                     <option value="">Default</option>
@@ -494,7 +494,7 @@
                                     <option value="stretch">Stretch</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Align Content</label>
                                 <select class="control" data-property="align-content">
                                     <option value="">Default</option>
@@ -506,7 +506,7 @@
                                     <option value="stretch">Stretch</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Align Self</label>
                                 <select class="control" data-property="align-self">
                                     <option value="">Default</option>
@@ -518,51 +518,51 @@
                                     <option value="stretch">Stretch</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Order</label>
                                 <input type="text" class="control" data-property="order" placeholder="0, 1, -1">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex">
                                 <label class="control-label">Flex Grow</label>
                                 <input type="text" class="control" data-property="flex-grow" placeholder="0, 1, 2">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex">
                                 <label class="control-label">Flex Shrink</label>
                                 <input type="text" class="control" data-property="flex-shrink" placeholder="0, 1, 2">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex">
                                 <label class="control-label">Flex Basis</label>
                                 <input type="text" class="control" data-property="flex-basis" placeholder="auto, 100px, 50%">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Template Columns</label>
                                 <input type="text" class="control" data-property="grid-template-columns" placeholder="1fr 1fr 1fr, repeat(3, 1fr)">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Template Rows</label>
                                 <input type="text" class="control" data-property="grid-template-rows" placeholder="1fr 1fr 1fr, repeat(3, 1fr)">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Column</label>
                                 <input type="text" class="control" data-property="grid-column" placeholder="1 / 3, span 2">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Row</label>
                                 <input type="text" class="control" data-property="grid-row" placeholder="1 / 3, span 2">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Gap</label>
                                 <input type="text" class="control" data-property="gap" placeholder="10px, 1em">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Row Gap</label>
                                 <input type="text" class="control" data-property="row-gap" placeholder="10px, 1em">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="flex,inline-flex,grid,inline-grid">
                                 <label class="control-label">Column Gap</label>
                                 <input type="text" class="control" data-property="column-gap" placeholder="10px, 1em">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Auto Flow</label>
                                 <select class="control" data-property="grid-auto-flow">
                                     <option value="">Default</option>
@@ -573,11 +573,11 @@
                                     <option value="column dense">Column Dense</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Auto Columns</label>
                                 <input type="text" class="control" data-property="grid-auto-columns" placeholder="auto, 1fr, 100px">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="display" data-depends-value="grid,inline-grid">
                                 <label class="control-label">Grid Auto Rows</label>
                                 <input type="text" class="control" data-property="grid-auto-rows" placeholder="auto, 1fr, 100px">
                             </div>
@@ -675,11 +675,11 @@
                                 <label class="control-label">Transition Property</label>
                                 <input type="text" class="control" data-property="transition-property" placeholder="all, opacity, transform">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="transition-property" data-depends-value="!">
                                 <label class="control-label">Transition Duration</label>
                                 <input type="text" class="control" data-property="transition-duration" placeholder="0.3s, 300ms">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="transition-property" data-depends-value="!">
                                 <label class="control-label">Transition Timing Function</label>
                                 <select class="control" data-property="transition-timing-function">
                                     <option value="">Default</option>
@@ -694,7 +694,7 @@
                                     <option value="cubic-bezier(0.4, 0, 0.2, 1)">Cubic Bezier</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="transition-property" data-depends-value="!">
                                 <label class="control-label">Transition Delay</label>
                                 <input type="text" class="control" data-property="transition-delay" placeholder="0s, 100ms">
                             </div>
@@ -706,11 +706,11 @@
                                 <label class="control-label">Animation Name</label>
                                 <input type="text" class="control" data-property="animation-name" placeholder="fadeIn, slideUp">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Duration</label>
                                 <input type="text" class="control" data-property="animation-duration" placeholder="1s, 500ms">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Timing Function</label>
                                 <select class="control" data-property="animation-timing-function">
                                     <option value="">Default</option>
@@ -725,15 +725,15 @@
                                     <option value="cubic-bezier(0.4, 0, 0.2, 1)">Cubic Bezier</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Delay</label>
                                 <input type="text" class="control" data-property="animation-delay" placeholder="0s, 100ms">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Iteration Count</label>
                                 <input type="text" class="control" data-property="animation-iteration-count" placeholder="1, infinite, 3">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Direction</label>
                                 <select class="control" data-property="animation-direction">
                                     <option value="">Default</option>
@@ -743,7 +743,7 @@
                                     <option value="alternate-reverse">Alternate Reverse</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Fill Mode</label>
                                 <select class="control" data-property="animation-fill-mode">
                                     <option value="">Default</option>
@@ -753,7 +753,7 @@
                                     <option value="both">Both</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="animation-name" data-depends-value="!">
                                 <label class="control-label">Animation Play State</label>
                                 <select class="control" data-property="animation-play-state">
                                     <option value="">Default</option>
@@ -844,7 +844,7 @@
                                 <label class="control-label">Transform</label>
                                 <input type="text" class="control" data-property="transform" placeholder="rotate(45deg), scale(1.2)">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="transform" data-depends-value="!">
                                 <label class="control-label">Transform Origin</label>
                                 <input type="text" class="control" data-property="transform-origin" placeholder="center, 10px 15px">
                             </div>
@@ -998,11 +998,11 @@
                                     <option value="none">None</option>
                                 </select>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="border-style" data-depends-value="!none,!">
                                 <label class="control-label">Border Color</label>
                                 <input type="color" class="control" data-property="border-color">
                             </div>
-                            <div class="control-group">
+                            <div class="control-group" data-depends-on="border-style" data-depends-value="!none,!">
                                 <label class="control-label">Border Width</label>
                                 <input type="text" class="control" data-property="border-width" placeholder="1px, 2px">
                             </div>
