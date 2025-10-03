@@ -16,6 +16,9 @@
 <!-- Property Dependencies Manager -->
 <script src="<?php echo plugins_url('assets/js/property-dependencies.js', dirname(__FILE__)); ?>"></script>
 
+<!-- Spotlight Mode for Code Editor -->
+<script src="<?php echo plugins_url('assets/js/spotlight-mode.js', dirname(__FILE__)); ?>"></script>
+
    <!-- Loading Overlay -->
     <div id="livecss-loader" class="livecss-loader">
         <div class="livecss-loader-content">
@@ -176,6 +179,7 @@
                 this.iframe = null;
                 this.iframeDoc = null;
                 this.codeEditor = null;
+                this.spotlightMode = null;
                 this.isUpdatingFromCode = false;
                 this.selectorSuggestions = [];
                 this.suggestActiveIndex = -1;
@@ -448,6 +452,12 @@
                         // Verify editor is working
                         setTimeout(() => {
                             if (this.codeEditor && typeof this.codeEditor.getValue === 'function') {
+                                // Initialize Spotlight Mode
+                                if (typeof SpotlightMode !== 'undefined') {
+                                    this.spotlightMode = new SpotlightMode(this);
+                                    this.spotlightMode.init(this.codeEditor);
+                                    console.log('[LiveCSSEditor] SpotlightMode initialized');
+                                }
                                 resolve();
                             } else {
                                 reject(new Error('CodeMirror editor initialization failed'));
@@ -497,6 +507,13 @@
                         selectorInput.addEventListener('input', () => {
                             this.updateSelectionFromInput();
                             this.updateSelectorSuggestions();
+                            
+                            // Update spotlight if active
+                            if (this.spotlightMode && this.spotlightMode.isSpotlightActive()) {
+                                setTimeout(() => {
+                                    this.spotlightMode.onSelectorChange(this.currentSelector);
+                                }, 100);
+                            }
                         });
                         selectorInput.addEventListener('focus', () => {
                             this.updateSelectorSuggestions();
@@ -799,7 +816,18 @@
 
                 if (tabName === 'code' && this.codeEditor) {
                     console.log('Refreshing CodeMirror editor');
-                    setTimeout(() => this.codeEditor.refresh(), 50);
+                    setTimeout(() => {
+                        this.codeEditor.refresh();
+                        
+                        // Auto-activate spotlight mode when switching to code editor
+                        if (this.spotlightMode && this.currentSelector) {
+                            console.log('[LiveCSSEditor] Auto-activating spotlight mode');
+                            this.spotlightMode.activate();
+                        }
+                    }, 50);
+                } else if (tabName === 'visual' && this.spotlightMode) {
+                    // Deactivate spotlight when switching to visual editor
+                    this.spotlightMode.deactivate();
                 }
             }
 
@@ -895,9 +923,19 @@
             updateCodeEditor() {
                 if (!this.codeEditor) return;
                 
+                // Don't skip if spotlight is active - we need to update the CSS
+                // but we'll refresh spotlight after
+                
                 this.isUpdatingFromCode = true;
                 this.codeEditor.setValue(this.generateCSS());
                 this.isUpdatingFromCode = false;
+                
+                // Update spotlight after code changes
+                if (this.spotlightMode && this.spotlightMode.isSpotlightActive()) {
+                    setTimeout(() => {
+                        this.spotlightMode.updateSpotlight();
+                    }, 50);
+                }
             }
 
             updateVisualControls() {
