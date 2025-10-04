@@ -224,8 +224,16 @@ class SpotlightMode {
 
         // Check if the range starts with @media query
         const firstLine = this.codeEditor.getLine(selectorRange.from.line);
+        console.log('[SpotlightMode] 🔍 First line of range:', firstLine);
+        console.log('[SpotlightMode] 📊 Range info:', {
+            fromLine: selectorRange.from.line,
+            toLine: selectorRange.to.line,
+            startsWithMedia: firstLine.trim().startsWith('@media')
+        });
+        
         if (firstLine.trim().startsWith('@media')) {
             console.log('[SpotlightMode] 🎨 Special highlighting for @media line');
+            console.log('[SpotlightMode] 🟣 Highlighting @media line:', selectorRange.from.line);
             
             // Highlight the @media line with special purple style
             this.highlightRange(
@@ -233,6 +241,9 @@ class SpotlightMode {
                 { line: selectorRange.from.line, ch: firstLine.length },
                 true // isMediaQuery flag
             );
+            
+            console.log('[SpotlightMode] 🔵 Highlighting content lines:', 
+                (selectorRange.from.line + 1), 'to', selectorRange.to.line);
             
             // Highlight the rest with normal blue style
             if (selectorRange.from.line < selectorRange.to.line) {
@@ -243,6 +254,7 @@ class SpotlightMode {
                 );
             }
         } else {
+            console.log('[SpotlightMode] 🔵 Regular selector - single highlight');
             // Regular selector - highlight normally
             this.highlightRange(selectorRange.from, selectorRange.to, false);
         }
@@ -379,27 +391,33 @@ class SpotlightMode {
         const content = this.codeEditor.getValue();
         const lines = content.split('\n');
         
+        let currentMediaQueryLine = null;
         let braceDepth = 0;
         
-        // Search backwards from the line to find opening @media
-        for (let i = lineNumber; i >= 0; i--) {
+        // Scan forward from start to track which @media block we're in
+        for (let i = 0; i <= lineNumber; i++) {
             const line = lines[i];
+            const trimmedLine = line.trim();
             
-            // Count braces (going backwards, so reverse the logic)
-            const closeBraces = (line.match(/\}/g) || []).length;
+            // Check if this is an @media line
+            if (trimmedLine.startsWith('@media')) {
+                currentMediaQueryLine = i;
+                braceDepth = 0;
+            }
+            
+            // Count braces to track depth
             const openBraces = (line.match(/\{/g) || []).length;
-            braceDepth += closeBraces - openBraces;
+            const closeBraces = (line.match(/\}/g) || []).length;
+            braceDepth += openBraces - closeBraces;
             
-            // Check if this line has @media
-            if (line.trim().startsWith('@media')) {
-                if (braceDepth === 0) {
-                    // We found the @media that contains our line
-                    return i;
-                }
+            // If we close the @media block, reset
+            if (braceDepth === 0 && currentMediaQueryLine !== null && i > currentMediaQueryLine) {
+                currentMediaQueryLine = null;
             }
         }
         
-        return null;
+        console.log('[findMediaQueryLine] Line', lineNumber, '→ @media line:', currentMediaQueryLine);
+        return currentMediaQueryLine;
     }
     
     /**
@@ -557,6 +575,8 @@ class SpotlightMode {
     highlightRange(from, to, isMediaQuery = false) {
         try {
             const className = isMediaQuery ? 'cm-spotlight-media' : 'cm-spotlight-active';
+            console.log(`[SpotlightMode] 💡 Applying ${className} from line ${from.line} to ${to.line}`);
+            
             const highlightMarker = this.codeEditor.markText(from, to, {
                 className: className,
                 readOnly: false,
@@ -565,8 +585,9 @@ class SpotlightMode {
             });
             
             this.blurMarkers.push(highlightMarker);
+            console.log(`[SpotlightMode] ✅ Marker created successfully with class: ${className}`);
         } catch (error) {
-            console.warn('[SpotlightMode] Error creating highlight marker:', error);
+            console.error('[SpotlightMode] ❌ Error creating highlight marker:', error);
         }
     }
 
