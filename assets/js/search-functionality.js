@@ -504,4 +504,5 @@ class SearchFunctionality {
 // Export for use in editor-js.php
 if (typeof window !== 'undefined') {
     window.SearchFunctionality = SearchFunctionality;
+    console.log('✅ SearchFunctionality library loaded');
 }

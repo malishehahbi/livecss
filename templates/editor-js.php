@@ -129,11 +129,12 @@
                 this.maxRetries = 3;
                 this.retryCount = 0;
                 this.initializationSteps = [
-                    { name: 'CodeMirror Library', weight: 15 },
-                    { name: 'DOM Elements', weight: 10 },
-                    { name: 'Code Editor', weight: 20 },
-                    { name: 'Event Listeners', weight: 15 },
-                    { name: 'Preview Iframe', weight: 25 },
+                    { name: 'CodeMirror Library', weight: 12 },
+                    { name: 'Feature Libraries', weight: 13 },
+                    { name: 'DOM Elements', weight: 8 },
+                    { name: 'Code Editor', weight: 17 },
+                    { name: 'Event Listeners', weight: 12 },
+                    { name: 'Preview Iframe', weight: 23 },
                     { name: 'Final Verification', weight: 15 }
                 ];
                 this.currentStep = 0;
@@ -214,32 +215,36 @@
                 
                 try {
                     // Step 1: Check CodeMirror
-                    this.loader.updateProgress(0, 'Checking CodeMirror library...');
+                    this.loader.updateProgress(0, 'Loading CodeMirror library...');
                     await this.waitForCodeMirror();
                     
-                    // Step 2: Verify DOM elements
-                    this.loader.updateProgress(1, 'Verifying DOM elements...');
+                    // Step 2: Check Feature Libraries
+                    this.loader.updateProgress(1, 'Loading feature libraries...');
+                    await this.waitForFeatureLibraries();
+                    
+                    // Step 3: Verify DOM elements
+                    this.loader.updateProgress(2, 'Verifying DOM elements...');
                     await this.verifyDOMElements();
                     
-                    // Step 3: Setup code editor
-                    this.loader.updateProgress(2, 'Setting up code editor...');
+                    // Step 4: Setup code editor
+                    this.loader.updateProgress(3, 'Setting up code editor...');
                     await this.setupCodeEditor();
                     
-                    // Step 4: Setup event listeners
-                    this.loader.updateProgress(3, 'Initializing event listeners...');
+                    // Step 5: Setup event listeners
+                    this.loader.updateProgress(4, 'Initializing event listeners...');
                     await this.setupEventListeners();
                     
-                    // Step 5: Setup iframe
-                    this.loader.updateProgress(4, 'Loading preview iframe...');
+                    // Step 6: Setup iframe
+                    this.loader.updateProgress(5, 'Loading preview iframe...');
                     await this.setupIframe();
                     
-                    // Step 6: Load saved CSS and final verification
-                    this.loader.updateProgress(5, 'Loading saved CSS and verifying...');
+                    // Step 7: Load saved CSS and final verification
+                    this.loader.updateProgress(6, 'Loading saved CSS and verifying...');
                     await this.loadSavedCSS();
                     await this.verifyFunctionality();
                     
                     this.isInitialized = true;
-                    console.log('LiveCSSEditor fully initialized');
+                    console.log('✅ LiveCSSEditor fully initialized with all features');
                     this.loader.hide();
                     
                 } catch (error) {
@@ -264,6 +269,7 @@
                     
                     const checkCodeMirror = () => {
                         if (typeof CodeMirror !== 'undefined' && CodeMirror.modes && CodeMirror.modes.css) {
+                            console.log('✅ CodeMirror library loaded');
                             resolve();
                         } else if (attempts < maxAttempts) {
                             attempts++;
@@ -274,6 +280,49 @@
                     };
                     
                     checkCodeMirror();
+                });
+            }
+
+            waitForFeatureLibraries() {
+                return new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    const maxAttempts = 50; // 5 seconds
+                    
+                    const checkFeatures = () => {
+                        const features = {
+                            'SpotlightMode': typeof SpotlightMode !== 'undefined',
+                            'SearchFunctionality': typeof SearchFunctionality !== 'undefined',
+                            'PropertyDependencies': typeof PropertyDependencies !== 'undefined'
+                        };
+                        
+                        const loadedFeatures = Object.entries(features)
+                            .filter(([name, loaded]) => loaded)
+                            .map(([name]) => name);
+                        
+                        const missingFeatures = Object.entries(features)
+                            .filter(([name, loaded]) => !loaded)
+                            .map(([name]) => name);
+                        
+                        // All features loaded
+                        if (missingFeatures.length === 0) {
+                            console.log('✅ All feature libraries loaded:', loadedFeatures.join(', '));
+                            resolve();
+                        } 
+                        // Still waiting
+                        else if (attempts < maxAttempts) {
+                            attempts++;
+                            if (attempts % 10 === 0) { // Log every second
+                                console.log(`⏳ Waiting for features (${attempts * 100}ms):`, missingFeatures.join(', '));
+                            }
+                            setTimeout(checkFeatures, 100);
+                        } 
+                        // Timeout
+                        else {
+                            reject(new Error(`Feature libraries failed to load: ${missingFeatures.join(', ')}. Please refresh the page.`));
+                        }
+                    };
+                    
+                    checkFeatures();
                 });
             }
 
@@ -291,9 +340,37 @@
                     if (missingElements.length > 0) {
                         reject(new Error(`Missing required elements: ${missingElements.join(', ')}`));
                     } else {
+                        console.log('✅ All required DOM elements verified');
                         resolve();
                     }
                 });
+            }
+
+            initializeFeatures() {
+                try {
+                    // Initialize Spotlight Mode
+                    if (typeof SpotlightMode !== 'undefined') {
+                        this.spotlightMode = new SpotlightMode(this);
+                        this.spotlightMode.init(this.codeEditor);
+                        console.log('✅ SpotlightMode initialized');
+                    } else {
+                        console.warn('⚠️ SpotlightMode not available');
+                    }
+                    
+                    // Initialize Search Functionality
+                    if (typeof SearchFunctionality !== 'undefined') {
+                        this.searchFunctionality = new SearchFunctionality(this);
+                        this.searchFunctionality.init(this.codeEditor);
+                        console.log('✅ SearchFunctionality initialized');
+                    } else {
+                        console.warn('⚠️ SearchFunctionality not available');
+                    }
+                    
+                    console.log('✅ All features initialized successfully');
+                } catch (error) {
+                    console.error('❌ Feature initialization error:', error);
+                    throw error;
+                }
             }
 
             verifyFunctionality() {
@@ -469,20 +546,8 @@
                         // Verify editor is working
                         setTimeout(() => {
                             if (this.codeEditor && typeof this.codeEditor.getValue === 'function') {
-                                // Initialize Spotlight Mode
-                                if (typeof SpotlightMode !== 'undefined') {
-                                    this.spotlightMode = new SpotlightMode(this);
-                                    this.spotlightMode.init(this.codeEditor);
-                                    console.log('[LiveCSSEditor] SpotlightMode initialized');
-                                }
-                                
-                                // Initialize Search Functionality
-                                if (typeof SearchFunctionality !== 'undefined') {
-                                    this.searchFunctionality = new SearchFunctionality(this);
-                                    this.searchFunctionality.init(this.codeEditor);
-                                    console.log('[LiveCSSEditor] SearchFunctionality initialized');
-                                }
-                                
+                                // Initialize features (all guaranteed to be loaded)
+                                this.initializeFeatures();
                                 resolve();
                             } else {
                                 reject(new Error('CodeMirror editor initialization failed'));
@@ -612,6 +677,11 @@
                                 deviceButtons.forEach(b => b.classList.remove('active'));
                                 btn.classList.add('active');
                                 this.setDevice(btn.dataset.device);
+                                
+                                // Notify spotlight mode about device change
+                                if (this.spotlightMode && this.spotlightMode.isSpotlightActive()) {
+                                    this.spotlightMode.onDeviceChange(btn.dataset.device);
+                                }
                             });
                         });
 
@@ -1815,15 +1885,25 @@
                 this.updatePreview();
                 
                 // Restore selector
+                const selectorInput = document.getElementById('selector-input');
                 if (state.currentSelector) {
-                    const selectorInput = document.getElementById('selector-input');
                     if (selectorInput) {
                         selectorInput.value = state.currentSelector;
                         this.currentSelector = state.currentSelector;
                         this.updateSelectionFromInput();
-                        this.updateVisualControls();
+                    }
+                } else {
+                    // Clear selector if none in saved state
+                    if (selectorInput) {
+                        selectorInput.value = '';
+                        this.currentSelector = '';
+                        this.updateSelectionFromInput();
                     }
                 }
+                
+                // ALWAYS update visual controls and usage dots after restore
+                this.updateVisualControls();
+                this.renderUsageDots();
                 
                 // Restore device
                 if (state.currentDevice && state.currentDevice !== this.currentDevice) {
@@ -1833,7 +1913,7 @@
                 // Keep change tracking state
                 this.hasUnsavedChanges = wasTracking;
                 
-                console.log('[LiveCSSEditor] State restored');
+                console.log('[LiveCSSEditor] State restored with selector:', state.currentSelector);
             }
             
             undo() {
@@ -1841,10 +1921,11 @@
                     this.historyIndex--;
                     this.restoreState(this.history[this.historyIndex]);
                     this.updateHistoryButtons();
-                    this.showStatusMessage('Undo successful', 'success');
-                    console.log('[LiveCSSEditor] Undo to index:', this.historyIndex);
+                    this.showStatusMessage('✅ Undo successful', 'success');
+                    console.log('[LiveCSSEditor] ✅ Undo successful - Index:', this.historyIndex, '/', this.history.length - 1);
                 } else {
-                    console.log('[LiveCSSEditor] Cannot undo - at beginning of history');
+                    this.showStatusMessage('⚠️ Cannot undo - at beginning of history', 'warning');
+                    console.log('[LiveCSSEditor] ⚠️ Cannot undo - at beginning of history');
                 }
             }
             
@@ -1853,10 +1934,11 @@
                     this.historyIndex++;
                     this.restoreState(this.history[this.historyIndex]);
                     this.updateHistoryButtons();
-                    this.showStatusMessage('Redo successful', 'success');
-                    console.log('[LiveCSSEditor] Redo to index:', this.historyIndex);
+                    this.showStatusMessage('✅ Redo successful', 'success');
+                    console.log('[LiveCSSEditor] ✅ Redo successful - Index:', this.historyIndex, '/', this.history.length - 1);
                 } else {
-                    console.log('[LiveCSSEditor] Cannot redo - at end of history');
+                    this.showStatusMessage('⚠️ Cannot redo - at end of history', 'warning');
+                    console.log('[LiveCSSEditor] ⚠️ Cannot redo - at end of history');
                 }
             }
             

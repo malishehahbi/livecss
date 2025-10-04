@@ -300,3 +300,7 @@ window.getPropertyDependencyStats = () => {
     }
     return null;
 };
+
+// Export class for loading detection
+window.PropertyDependencies = PropertyDependencyManager;
+console.log('✅ PropertyDependencies library loaded');

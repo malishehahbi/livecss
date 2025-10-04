@@ -344,3 +344,4 @@ class SpotlightMode {
 
 // Export for global access
 window.SpotlightMode = SpotlightMode;
+console.log('✅ SpotlightMode library loaded');
