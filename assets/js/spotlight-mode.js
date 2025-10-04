@@ -13,6 +13,7 @@ class SpotlightMode {
         this.isActive = false;
         this.currentSelectorRange = null;
         this.blurMarkers = [];
+        this.currentDevice = 'desktop'; // Track current device (desktop/tablet/mobile)
     }
 
     /**
@@ -153,7 +154,7 @@ class SpotlightMode {
             return;
         }
 
-        console.log('[SpotlightMode] Updating spotlight for:', this.editor.currentSelector);
+        console.log('[SpotlightMode] 🔍 Updating spotlight for:', this.editor.currentSelector, 'Device:', this.currentDevice);
 
         // Clear existing markers
         this.clearMarkers();
@@ -162,9 +163,15 @@ class SpotlightMode {
         const selectorRange = this.findSelectorRange(this.editor.currentSelector);
         
         if (!selectorRange) {
-            console.log('[SpotlightMode] Selector not found in CSS');
+            console.log('[SpotlightMode] ❌ Selector not found in CSS');
             return;
         }
+
+        console.log('[SpotlightMode] 📍 Found range:', {
+            from: `Line ${selectorRange.from.line}`,
+            to: `Line ${selectorRange.to.line}`,
+            lines: selectorRange.to.line - selectorRange.from.line + 1
+        });
 
         this.currentSelectorRange = selectorRange;
 
@@ -210,35 +217,159 @@ class SpotlightMode {
         // Try to find exact selector match
         const selectorPattern = new RegExp('^\\s*' + escapedSelector + '\\s*\\{', 'i');
         
-        let startLine = -1;
-        let endLine = -1;
-        let braceDepth = 0;
-        
-        // Find selector start
+        // Find ALL matches of this selector
+        const matches = [];
         for (let i = 0; i < lines.length; i++) {
             if (selectorPattern.test(lines[i])) {
-                startLine = i;
-                // Count opening brace
-                const openBraces = (lines[i].match(/\{/g) || []).length;
-                const closeBraces = (lines[i].match(/\}/g) || []).length;
-                braceDepth = openBraces - closeBraces;
-                
-                // Check if it's a one-liner
-                if (braceDepth === 0 && openBraces > 0) {
-                    endLine = i;
-                    break;
+                const match = this.getSelectorBlock(lines, i);
+                if (match) {
+                    // Also store the scope information
+                    match.scope = this.getDeviceScope(i);
+                    match.mediaQueryLine = this.findMediaQueryLine(i);
+                    matches.push(match);
                 }
-                break;
             }
         }
         
-        if (startLine === -1) {
-            console.warn('[SpotlightMode] Could not find selector:', selector);
+        if (matches.length === 0) {
+            console.warn('[SpotlightMode] ❌ Could not find selector:', selector);
             return null;
         }
         
-        // If not a one-liner, find matching closing brace
-        if (endLine === -1) {
+        // If only one match, return it
+        if (matches.length === 1) {
+            console.log('[SpotlightMode] ✅ Found 1 match for selector at line', matches[0].range.from.line);
+            return this.expandRangeForMediaQuery(matches[0]);
+        }
+        
+        // Multiple matches - find the one that matches current device
+        console.log(`[SpotlightMode] Found ${matches.length} matches, filtering by device:`, this.currentDevice);
+        
+        for (const match of matches) {
+            console.log(`[SpotlightMode] Match at line ${match.range.from.line}, scope: ${match.scope}`);
+            
+            // Match based on current device
+            if (this.currentDevice === 'desktop' && match.scope === 'desktop') {
+                console.log('[SpotlightMode] ✅ Found desktop match (root CSS)');
+                return this.expandRangeForMediaQuery(match);
+            } else if (this.currentDevice === 'tablet' && match.scope === 'tablet') {
+                console.log('[SpotlightMode] ✅ Found tablet match (@media max-width: 1024px)');
+                return this.expandRangeForMediaQuery(match);
+            } else if (this.currentDevice === 'mobile' && match.scope === 'mobile') {
+                console.log('[SpotlightMode] ✅ Found mobile match (@media max-width: 640px)');
+                return this.expandRangeForMediaQuery(match);
+            }
+        }
+        
+        // Fallback: return first match if no device-specific match found
+        console.warn('[SpotlightMode] ⚠️ No device-specific match found, using first match');
+        return this.expandRangeForMediaQuery(matches[0]);
+    }
+    
+    /**
+     * Expand range to include @media query block if selector is inside one
+     */
+    expandRangeForMediaQuery(match) {
+        console.log('[SpotlightMode] 🔧 expandRangeForMediaQuery called:', {
+            originalRange: `Line ${match.range.from.line} to ${match.range.to.line}`,
+            mediaQueryLine: match.mediaQueryLine,
+            scope: match.scope
+        });
+        
+        if (match.mediaQueryLine !== null) {
+            // Selector is inside @media query - expand range to include entire @media block
+            console.log(`[SpotlightMode] 📦 Expanding range to include @media query at line ${match.mediaQueryLine}`);
+            const content = this.codeEditor.getValue();
+            const lines = content.split('\n');
+            
+            // Show the @media line
+            console.log(`[SpotlightMode] @media line content: "${lines[match.mediaQueryLine]}"`);
+            
+            // Find the end of the @media block
+            let braceDepth = 0;
+            let mediaEndLine = -1;
+            
+            for (let i = match.mediaQueryLine; i < lines.length; i++) {
+                const line = lines[i];
+                braceDepth += (line.match(/\{/g) || []).length;
+                braceDepth -= (line.match(/\}/g) || []).length;
+                
+                if (braceDepth === 0 && i > match.mediaQueryLine) {
+                    mediaEndLine = i;
+                    break;
+                }
+            }
+            
+            if (mediaEndLine !== -1) {
+                const expandedRange = {
+                    from: { line: match.mediaQueryLine, ch: 0 },
+                    to: { line: mediaEndLine, ch: lines[mediaEndLine].length }
+                };
+                console.log('[SpotlightMode] ✅ Expanded range:', {
+                    from: `Line ${expandedRange.from.line}`,
+                    to: `Line ${expandedRange.to.line}`,
+                    totalLines: mediaEndLine - match.mediaQueryLine + 1
+                });
+                return expandedRange;
+            } else {
+                console.warn('[SpotlightMode] ⚠️ Could not find end of @media block');
+            }
+        } else {
+            console.log('[SpotlightMode] ℹ️ Not in @media query - returning original range');
+        }
+        
+        // Not in @media or couldn't find end - return original range
+        return match.range;
+    }
+    
+    /**
+     * Find the line number of the @media query containing the given line
+     * Returns line number or null if not in a media query
+     */
+    findMediaQueryLine(lineNumber) {
+        const content = this.codeEditor.getValue();
+        const lines = content.split('\n');
+        
+        let braceDepth = 0;
+        
+        // Search backwards from the line to find opening @media
+        for (let i = lineNumber; i >= 0; i--) {
+            const line = lines[i];
+            
+            // Count braces (going backwards, so reverse the logic)
+            const closeBraces = (line.match(/\}/g) || []).length;
+            const openBraces = (line.match(/\{/g) || []).length;
+            braceDepth += closeBraces - openBraces;
+            
+            // Check if this line has @media
+            if (line.trim().startsWith('@media')) {
+                if (braceDepth === 0) {
+                    // We found the @media that contains our line
+                    return i;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Get a complete selector block with its range
+     */
+    getSelectorBlock(lines, startLine) {
+        let endLine = -1;
+        let braceDepth = 0;
+        
+        // Count opening brace on start line
+        const openBraces = (lines[startLine].match(/\{/g) || []).length;
+        const closeBraces = (lines[startLine].match(/\}/g) || []).length;
+        braceDepth = openBraces - closeBraces;
+        
+        // Check if it's a one-liner
+        if (braceDepth === 0 && openBraces > 0) {
+            endLine = startLine;
+        } else {
+            // Find matching closing brace
             for (let i = startLine + 1; i < lines.length; i++) {
                 const line = lines[i];
                 braceDepth += (line.match(/\{/g) || []).length;
@@ -257,9 +388,89 @@ class SpotlightMode {
         }
         
         return {
-            from: { line: startLine, ch: 0 },
-            to: { line: endLine, ch: lines[endLine].length }
+            range: {
+                from: { line: startLine, ch: 0 },
+                to: { line: endLine, ch: lines[endLine].length }
+            }
         };
+    }
+    
+    /**
+     * Determine if a line is inside a media query and which device it targets
+     * Returns: 'desktop', 'tablet', or 'mobile'
+     */
+    getDeviceScope(lineNumber) {
+        const mediaQuery = this.findContainingMediaQuery(lineNumber);
+        
+        console.log(`[SpotlightMode] 🔍 getDeviceScope(${lineNumber}):`, mediaQuery);
+        
+        if (!mediaQuery) {
+            console.log('[SpotlightMode] → Scope: desktop (no @media)');
+            return 'desktop'; // Not in a media query = desktop (root CSS)
+        }
+        
+        // Check if it's a tablet query (max-width: 1024px)
+        if (mediaQuery.includes('1024px')) {
+            console.log('[SpotlightMode] → Scope: tablet (found 1024px)');
+            return 'tablet';
+        }
+        
+        // Check if it's a mobile query (max-width: 640px)
+        if (mediaQuery.includes('640px')) {
+            console.log('[SpotlightMode] → Scope: mobile (found 640px)');
+            return 'mobile';
+        }
+        
+        // Default to desktop for unrecognized media queries
+        console.log('[SpotlightMode] → Scope: desktop (unrecognized @media)');
+        return 'desktop';
+    }
+    
+    /**
+     * Find the @media query that contains a given line number
+     * Returns the media query text or null if not in a media query
+     */
+    findContainingMediaQuery(lineNumber) {
+        const content = this.codeEditor.getValue();
+        const lines = content.split('\n');
+        
+        console.log(`[SpotlightMode] 🔎 findContainingMediaQuery for line ${lineNumber}`);
+        
+        // First, check if we're inside ANY @media block
+        let currentMediaQuery = null;
+        let currentMediaLine = -1;
+        let depth = 0;
+        
+        for (let i = 0; i <= lineNumber; i++) {
+            const line = lines[i].trim();
+            
+            // Check if this line starts a @media query
+            if (line.startsWith('@media')) {
+                currentMediaQuery = line;
+                currentMediaLine = i;
+                console.log(`[SpotlightMode]   Found @media at line ${i}: "${line}"`);
+            }
+            
+            // Count braces to track depth
+            const openBraces = (lines[i].match(/\{/g) || []).length;
+            const closeBraces = (lines[i].match(/\}/g) || []).length;
+            depth += openBraces - closeBraces;
+            
+            // If we hit depth 0 after an @media, we've exited that block
+            if (depth === 0 && currentMediaQuery && i > currentMediaLine) {
+                console.log(`[SpotlightMode]   Exited @media block at line ${i}`);
+                currentMediaQuery = null;
+                currentMediaLine = -1;
+            }
+        }
+        
+        if (currentMediaQuery) {
+            console.log(`[SpotlightMode] ✅ Line ${lineNumber} is inside @media: "${currentMediaQuery}"`);
+        } else {
+            console.log(`[SpotlightMode] ❌ Line ${lineNumber} is NOT inside any @media query`);
+        }
+        
+        return currentMediaQuery;
     }
 
     /**
@@ -331,6 +542,27 @@ class SpotlightMode {
         
         if (this.isActive) {
             this.updateSpotlight();
+        }
+    }
+
+    /**
+     * Update spotlight when device changes (Desktop/Tablet/Mobile)
+     * Called when user clicks device toggle buttons
+     */
+    onDeviceChange(newDevice) {
+        console.log('[SpotlightMode] 📱 Device changed from', this.currentDevice, 'to', newDevice);
+        this.currentDevice = newDevice;
+        
+        if (this.isActive && this.editor.currentSelector) {
+            console.log('[SpotlightMode] 🔄 Updating spotlight for new device with selector:', this.editor.currentSelector);
+            this.updateSpotlight();
+        } else {
+            if (!this.isActive) {
+                console.log('[SpotlightMode] ⚠️ Spotlight not active, skipping update');
+            }
+            if (!this.editor.currentSelector) {
+                console.log('[SpotlightMode] ⚠️ No selector selected, skipping update');
+            }
         }
     }
 
