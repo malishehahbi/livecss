@@ -80,10 +80,21 @@ class SpotlightMode {
                 z-index: 10;
                 pointer-events: auto !important;
             }
+            
+            /* Special highlight for @media query lines */
+            .cm-spotlight-media {
+                background: rgba(138, 43, 226, 0.12) !important;
+                border-left: 3px solid rgba(138, 43, 226, 0.8) !important;
+                font-weight: 600 !important;
+                box-shadow: 0 2px 16px rgba(138, 43, 226, 0.25);
+                position: relative;
+                z-index: 11;
+                pointer-events: auto !important;
+            }
 
             /* Animated pulse on active selector */
             @keyframes spotlight-pulse {
-                0%, 100% {s
+                0%, 100% {
                     box-shadow: 0 2px 16px rgba(26, 162, 230, 0.2);
                     border-left-color: rgba(26, 162, 230, 0.7);
                 }
@@ -92,9 +103,25 @@ class SpotlightMode {
                     border-left-color: rgba(26, 162, 230, 0.9);
                 }
             }
+            
+            /* Animated pulse for @media lines */
+            @keyframes spotlight-media-pulse {
+                0%, 100% {
+                    box-shadow: 0 2px 16px rgba(138, 43, 226, 0.25);
+                    border-left-color: rgba(138, 43, 226, 0.8);
+                }
+                50% {
+                    box-shadow: 0 4px 24px rgba(138, 43, 226, 0.4);
+                    border-left-color: rgba(138, 43, 226, 1);
+                }
+            }
 
             .cm-spotlight-active {
                 animation: spotlight-pulse 2.5s ease-in-out infinite;
+            }
+            
+            .cm-spotlight-media {
+                animation: spotlight-media-pulse 2.5s ease-in-out infinite;
             }
 
             /* Make CodeMirror wrapper relative for overlays */
@@ -195,8 +222,30 @@ class SpotlightMode {
             );
         }
 
-        // Highlight current selector (editable)
-        this.highlightRange(selectorRange.from, selectorRange.to);
+        // Check if the range starts with @media query
+        const firstLine = this.codeEditor.getLine(selectorRange.from.line);
+        if (firstLine.trim().startsWith('@media')) {
+            console.log('[SpotlightMode] 🎨 Special highlighting for @media line');
+            
+            // Highlight the @media line with special purple style
+            this.highlightRange(
+                { line: selectorRange.from.line, ch: 0 },
+                { line: selectorRange.from.line, ch: firstLine.length },
+                true // isMediaQuery flag
+            );
+            
+            // Highlight the rest with normal blue style
+            if (selectorRange.from.line < selectorRange.to.line) {
+                this.highlightRange(
+                    { line: selectorRange.from.line + 1, ch: 0 },
+                    selectorRange.to,
+                    false // regular selector
+                );
+            }
+        } else {
+            // Regular selector - highlight normally
+            this.highlightRange(selectorRange.from, selectorRange.to, false);
+        }
 
         // Scroll to show the highlighted selector
         setTimeout(() => {
@@ -505,10 +554,11 @@ class SpotlightMode {
     /**
      * Highlight the active selector range
      */
-    highlightRange(from, to) {
+    highlightRange(from, to, isMediaQuery = false) {
         try {
+            const className = isMediaQuery ? 'cm-spotlight-media' : 'cm-spotlight-active';
             const highlightMarker = this.codeEditor.markText(from, to, {
-                className: 'cm-spotlight-active',
+                className: className,
                 readOnly: false,
                 inclusiveLeft: true,
                 inclusiveRight: true
