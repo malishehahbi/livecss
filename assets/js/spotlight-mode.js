@@ -84,7 +84,6 @@ class SpotlightMode {
             /* Special highlight for @media query lines */
             .cm-spotlight-media {
                 background: rgba(138, 43, 226, 0.12) !important;
-                border-left: 3px solid rgba(138, 43, 226, 0.8) !important;
                 font-weight: 600 !important;
                 box-shadow: 0 2px 16px rgba(138, 43, 226, 0.25);
                 position: relative;

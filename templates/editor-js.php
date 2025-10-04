@@ -1005,6 +1005,13 @@
                         if (this.spotlightMode && this.currentSelector) {
                             console.log('[LiveCSSEditor] Auto-activating spotlight mode');
                             this.spotlightMode.activate();
+                            
+                            // Apply current device selection to spotlight
+                            const activeDeviceBtn = document.querySelector('.device-btn.active');
+                            if (activeDeviceBtn && activeDeviceBtn.dataset.device) {
+                                console.log('[LiveCSSEditor] Applying device to spotlight:', activeDeviceBtn.dataset.device);
+                                this.spotlightMode.onDeviceChange(activeDeviceBtn.dataset.device);
+                            }
                         }
                     }, 50);
                 } else if (tabName === 'visual' && this.spotlightMode) {
