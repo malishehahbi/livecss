@@ -23,8 +23,6 @@ class SpotlightMode {
         this.codeEditor = codeEditor;
         this.injectStyles();
         this.setupKeyboardShortcuts();
-        
-        console.log('[SpotlightMode] Auto-spotlight initialized');
     }
 
     /**
@@ -34,8 +32,6 @@ class SpotlightMode {
         this.codeEditor.on('keydown', (cm, event) => {
             // ESC key pressed while spotlight is active
             if (event.key === 'Escape' && this.isActive) {
-                console.log('[SpotlightMode] ESC pressed - clearing selector');
-                
                 // Clear the selector input
                 const selectorInput = document.getElementById('selector-input');
                 if (selectorInput) {
@@ -142,11 +138,8 @@ class SpotlightMode {
         }
         
         if (!this.editor.currentSelector) {
-            console.log('[SpotlightMode] No selector - spotlight not activated');
             return;
         }
-
-        console.log('[SpotlightMode] Activating for selector:', this.editor.currentSelector);
         
         this.isActive = true;
         this.codeEditor.getWrapperElement().classList.add('spotlight-mode-active');
@@ -161,8 +154,6 @@ class SpotlightMode {
     deactivate() {
         if (!this.isActive) return;
         
-        console.log('[SpotlightMode] Deactivating');
-        
         this.clearMarkers();
         this.isActive = false;
         this.codeEditor.getWrapperElement().classList.remove('spotlight-mode-active');
@@ -175,12 +166,9 @@ class SpotlightMode {
         if (!this.isActive) return;
         
         if (!this.editor.currentSelector) {
-            console.log('[SpotlightMode] No selector - clearing spotlight');
             this.clearMarkers();
             return;
         }
-
-        console.log('[SpotlightMode] 🔍 Updating spotlight for:', this.editor.currentSelector, 'Device:', this.currentDevice);
 
         // Clear existing markers
         this.clearMarkers();
@@ -189,15 +177,8 @@ class SpotlightMode {
         const selectorRange = this.findSelectorRange(this.editor.currentSelector);
         
         if (!selectorRange) {
-            console.log('[SpotlightMode] ❌ Selector not found in CSS');
             return;
         }
-
-        console.log('[SpotlightMode] 📍 Found range:', {
-            from: `Line ${selectorRange.from.line}`,
-            to: `Line ${selectorRange.to.line}`,
-            lines: selectorRange.to.line - selectorRange.from.line + 1
-        });
 
         this.currentSelectorRange = selectorRange;
 
@@ -223,26 +204,14 @@ class SpotlightMode {
 
         // Check if the range starts with @media query
         const firstLine = this.codeEditor.getLine(selectorRange.from.line);
-        console.log('[SpotlightMode] 🔍 First line of range:', firstLine);
-        console.log('[SpotlightMode] 📊 Range info:', {
-            fromLine: selectorRange.from.line,
-            toLine: selectorRange.to.line,
-            startsWithMedia: firstLine.trim().startsWith('@media')
-        });
         
         if (firstLine.trim().startsWith('@media')) {
-            console.log('[SpotlightMode] 🎨 Special highlighting for @media line');
-            console.log('[SpotlightMode] 🟣 Highlighting @media line:', selectorRange.from.line);
-            
             // Highlight the @media line with special purple style
             this.highlightRange(
                 { line: selectorRange.from.line, ch: 0 },
                 { line: selectorRange.from.line, ch: firstLine.length },
                 true // isMediaQuery flag
             );
-            
-            console.log('[SpotlightMode] 🔵 Highlighting content lines:', 
-                (selectorRange.from.line + 1), 'to', selectorRange.to.line);
             
             // Highlight the rest with normal blue style
             if (selectorRange.from.line < selectorRange.to.line) {
@@ -253,7 +222,6 @@ class SpotlightMode {
                 );
             }
         } else {
-            console.log('[SpotlightMode] 🔵 Regular selector - single highlight');
             // Regular selector - highlight normally
             this.highlightRange(selectorRange.from, selectorRange.to, false);
         }
@@ -292,37 +260,28 @@ class SpotlightMode {
         }
         
         if (matches.length === 0) {
-            console.warn('[SpotlightMode] ❌ Could not find selector:', selector);
             return null;
         }
         
         // If only one match, return it
         if (matches.length === 1) {
-            console.log('[SpotlightMode] ✅ Found 1 match for selector at line', matches[0].range.from.line);
             return this.expandRangeForMediaQuery(matches[0]);
         }
         
         // Multiple matches - find the one that matches current device
-        console.log(`[SpotlightMode] Found ${matches.length} matches, filtering by device:`, this.currentDevice);
         
         for (const match of matches) {
-            console.log(`[SpotlightMode] Match at line ${match.range.from.line}, scope: ${match.scope}`);
-            
             // Match based on current device
             if (this.currentDevice === 'desktop' && match.scope === 'desktop') {
-                console.log('[SpotlightMode] ✅ Found desktop match (root CSS)');
                 return this.expandRangeForMediaQuery(match);
             } else if (this.currentDevice === 'tablet' && match.scope === 'tablet') {
-                console.log('[SpotlightMode] ✅ Found tablet match (@media max-width: 1024px)');
                 return this.expandRangeForMediaQuery(match);
             } else if (this.currentDevice === 'mobile' && match.scope === 'mobile') {
-                console.log('[SpotlightMode] ✅ Found mobile match (@media max-width: 640px)');
                 return this.expandRangeForMediaQuery(match);
             }
         }
         
         // Fallback: return first match if no device-specific match found
-        console.warn('[SpotlightMode] ⚠️ No device-specific match found, using first match');
         return this.expandRangeForMediaQuery(matches[0]);
     }
     
@@ -330,20 +289,10 @@ class SpotlightMode {
      * Expand range to include @media query block if selector is inside one
      */
     expandRangeForMediaQuery(match) {
-        console.log('[SpotlightMode] 🔧 expandRangeForMediaQuery called:', {
-            originalRange: `Line ${match.range.from.line} to ${match.range.to.line}`,
-            mediaQueryLine: match.mediaQueryLine,
-            scope: match.scope
-        });
-        
         if (match.mediaQueryLine !== null) {
             // Selector is inside @media query - expand range to include entire @media block
-            console.log(`[SpotlightMode] 📦 Expanding range to include @media query at line ${match.mediaQueryLine}`);
             const content = this.codeEditor.getValue();
             const lines = content.split('\n');
-            
-            // Show the @media line
-            console.log(`[SpotlightMode] @media line content: "${lines[match.mediaQueryLine]}"`);
             
             // Find the end of the @media block
             let braceDepth = 0;
@@ -361,21 +310,11 @@ class SpotlightMode {
             }
             
             if (mediaEndLine !== -1) {
-                const expandedRange = {
+                return {
                     from: { line: match.mediaQueryLine, ch: 0 },
                     to: { line: mediaEndLine, ch: lines[mediaEndLine].length }
                 };
-                console.log('[SpotlightMode] ✅ Expanded range:', {
-                    from: `Line ${expandedRange.from.line}`,
-                    to: `Line ${expandedRange.to.line}`,
-                    totalLines: mediaEndLine - match.mediaQueryLine + 1
-                });
-                return expandedRange;
-            } else {
-                console.warn('[SpotlightMode] ⚠️ Could not find end of @media block');
             }
-        } else {
-            console.log('[SpotlightMode] ℹ️ Not in @media query - returning original range');
         }
         
         // Not in @media or couldn't find end - return original range
@@ -415,7 +354,6 @@ class SpotlightMode {
             }
         }
         
-        console.log('[findMediaQueryLine] Line', lineNumber, '→ @media line:', currentMediaQueryLine);
         return currentMediaQueryLine;
     }
     
@@ -468,27 +406,21 @@ class SpotlightMode {
     getDeviceScope(lineNumber) {
         const mediaQuery = this.findContainingMediaQuery(lineNumber);
         
-        console.log(`[SpotlightMode] 🔍 getDeviceScope(${lineNumber}):`, mediaQuery);
-        
         if (!mediaQuery) {
-            console.log('[SpotlightMode] → Scope: desktop (no @media)');
             return 'desktop'; // Not in a media query = desktop (root CSS)
         }
         
         // Check if it's a tablet query (max-width: 1024px)
         if (mediaQuery.includes('1024px')) {
-            console.log('[SpotlightMode] → Scope: tablet (found 1024px)');
             return 'tablet';
         }
         
         // Check if it's a mobile query (max-width: 640px)
         if (mediaQuery.includes('640px')) {
-            console.log('[SpotlightMode] → Scope: mobile (found 640px)');
             return 'mobile';
         }
         
         // Default to desktop for unrecognized media queries
-        console.log('[SpotlightMode] → Scope: desktop (unrecognized @media)');
         return 'desktop';
     }
     
@@ -499,8 +431,6 @@ class SpotlightMode {
     findContainingMediaQuery(lineNumber) {
         const content = this.codeEditor.getValue();
         const lines = content.split('\n');
-        
-        console.log(`[SpotlightMode] 🔎 findContainingMediaQuery for line ${lineNumber}`);
         
         // First, check if we're inside ANY @media block
         let currentMediaQuery = null;
@@ -514,7 +444,6 @@ class SpotlightMode {
             if (line.startsWith('@media')) {
                 currentMediaQuery = line;
                 currentMediaLine = i;
-                console.log(`[SpotlightMode]   Found @media at line ${i}: "${line}"`);
             }
             
             // Count braces to track depth
@@ -524,16 +453,9 @@ class SpotlightMode {
             
             // If we hit depth 0 after an @media, we've exited that block
             if (depth === 0 && currentMediaQuery && i > currentMediaLine) {
-                console.log(`[SpotlightMode]   Exited @media block at line ${i}`);
                 currentMediaQuery = null;
                 currentMediaLine = -1;
             }
-        }
-        
-        if (currentMediaQuery) {
-            console.log(`[SpotlightMode] ✅ Line ${lineNumber} is inside @media: "${currentMediaQuery}"`);
-        } else {
-            console.log(`[SpotlightMode] ❌ Line ${lineNumber} is NOT inside any @media query`);
         }
         
         return currentMediaQuery;
@@ -564,7 +486,7 @@ class SpotlightMode {
             
             this.blurMarkers.push(blurMarker);
         } catch (error) {
-            console.warn('[SpotlightMode] Error creating blur marker:', error);
+            // Ignore errors
         }
     }
 
@@ -574,7 +496,6 @@ class SpotlightMode {
     highlightRange(from, to, isMediaQuery = false) {
         try {
             const className = isMediaQuery ? 'cm-spotlight-media' : 'cm-spotlight-active';
-            console.log(`[SpotlightMode] 💡 Applying ${className} from line ${from.line} to ${to.line}`);
             
             const highlightMarker = this.codeEditor.markText(from, to, {
                 className: className,
@@ -584,9 +505,8 @@ class SpotlightMode {
             });
             
             this.blurMarkers.push(highlightMarker);
-            console.log(`[SpotlightMode] ✅ Marker created successfully with class: ${className}`);
         } catch (error) {
-            console.error('[SpotlightMode] ❌ Error creating highlight marker:', error);
+            // Ignore errors
         }
     }
 
@@ -608,8 +528,6 @@ class SpotlightMode {
      * Update spotlight when selector changes
      */
     onSelectorChange(newSelector) {
-        console.log('[SpotlightMode] Selector changed to:', newSelector);
-        
         if (this.isActive) {
             this.updateSpotlight();
         }
@@ -620,19 +538,10 @@ class SpotlightMode {
      * Called when user clicks device toggle buttons
      */
     onDeviceChange(newDevice) {
-        console.log('[SpotlightMode] 📱 Device changed from', this.currentDevice, 'to', newDevice);
         this.currentDevice = newDevice;
         
         if (this.isActive && this.editor.currentSelector) {
-            console.log('[SpotlightMode] 🔄 Updating spotlight for new device with selector:', this.editor.currentSelector);
             this.updateSpotlight();
-        } else {
-            if (!this.isActive) {
-                console.log('[SpotlightMode] ⚠️ Spotlight not active, skipping update');
-            }
-            if (!this.editor.currentSelector) {
-                console.log('[SpotlightMode] ⚠️ No selector selected, skipping update');
-            }
         }
     }
 
@@ -646,4 +555,3 @@ class SpotlightMode {
 
 // Export for global access
 window.SpotlightMode = SpotlightMode;
-console.log('✅ SpotlightMode library loaded');

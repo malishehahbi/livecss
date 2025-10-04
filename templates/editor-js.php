@@ -997,19 +997,16 @@
                 }
 
                 if (tabName === 'code' && this.codeEditor) {
-                    console.log('Refreshing CodeMirror editor');
                     setTimeout(() => {
                         this.codeEditor.refresh();
                         
                         // Auto-activate spotlight mode when switching to code editor
                         if (this.spotlightMode && this.currentSelector) {
-                            console.log('[LiveCSSEditor] Auto-activating spotlight mode');
                             this.spotlightMode.activate();
                             
                             // Apply current device selection to spotlight
                             const activeDeviceBtn = document.querySelector('.device-btn.active');
                             if (activeDeviceBtn && activeDeviceBtn.dataset.device) {
-                                console.log('[LiveCSSEditor] Applying device to spotlight:', activeDeviceBtn.dataset.device);
                                 this.spotlightMode.onDeviceChange(activeDeviceBtn.dataset.device);
                             }
                         }
@@ -1072,8 +1069,6 @@
                         `;
                         this.iframeDoc.head.appendChild(style);
                     }
-                    
-                    console.log('[LiveCSSEditor] Preview mode enabled');
                 } else {
                     // Exit preview mode
                     editorContainer?.classList.remove('preview-mode');
@@ -1090,8 +1085,6 @@
                         // Restore selection highlights
                         this.updateSelectionFromInput();
                     }
-                    
-                    console.log('[LiveCSSEditor] Preview mode disabled');
                 }
             }
 
@@ -1636,8 +1629,6 @@
                     iframe.style.minWidth = '640px';
                     iframe.style.maxWidth = '640px';
                 }
-                
-                console.log(`[LiveCSSEditor] Device: ${this.currentDevice} | Fixed width: ${iframe.style.width} | STATIC (non-responsive)`);
             }
 
             getScopedSelectorKey(selector, scope = this.currentDevice) {
@@ -1824,7 +1815,6 @@
                 if (!this.hasUnsavedChanges) {
                     this.hasUnsavedChanges = true;
                     this.updateSaveButtonState();
-                    console.log('[LiveCSSEditor] Marked as changed');
                 }
             }
             
@@ -1867,7 +1857,6 @@
                     }
                     
                     this.updateHistoryButtons();
-                    console.log('[LiveCSSEditor] History captured. Index:', this.historyIndex, 'Size:', this.history.length);
                 }, 500); // 500ms debounce
             }
             
@@ -1919,8 +1908,6 @@
                 
                 // Keep change tracking state
                 this.hasUnsavedChanges = wasTracking;
-                
-                console.log('[LiveCSSEditor] State restored with selector:', state.currentSelector);
             }
             
             undo() {
@@ -1929,10 +1916,8 @@
                     this.restoreState(this.history[this.historyIndex]);
                     this.updateHistoryButtons();
                     this.showStatusMessage('✅ Undo successful', 'success');
-                    console.log('[LiveCSSEditor] ✅ Undo successful - Index:', this.historyIndex, '/', this.history.length - 1);
                 } else {
                     this.showStatusMessage('⚠️ Cannot undo - at beginning of history', 'warning');
-                    console.log('[LiveCSSEditor] ⚠️ Cannot undo - at beginning of history');
                 }
             }
             
@@ -1942,10 +1927,8 @@
                     this.restoreState(this.history[this.historyIndex]);
                     this.updateHistoryButtons();
                     this.showStatusMessage('✅ Redo successful', 'success');
-                    console.log('[LiveCSSEditor] ✅ Redo successful - Index:', this.historyIndex, '/', this.history.length - 1);
                 } else {
                     this.showStatusMessage('⚠️ Cannot redo - at end of history', 'warning');
-                    console.log('[LiveCSSEditor] ⚠️ Cannot redo - at end of history');
                 }
             }
             
@@ -1953,8 +1936,6 @@
                 // This will be called to enable/disable undo/redo buttons if you add them to the UI
                 const canUndo = this.historyIndex > 0;
                 const canRedo = this.historyIndex < this.history.length - 1;
-                
-                console.log('[LiveCSSEditor] History state - Can undo:', canUndo, 'Can redo:', canRedo);
                 
                 // If you add undo/redo buttons to the UI, update them here
                 // Example:
