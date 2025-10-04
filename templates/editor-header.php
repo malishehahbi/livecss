@@ -387,6 +387,17 @@ editor{
         color: hsl(var(--accent-foreground));
     }
 
+    .pseudo-button[aria-pressed="true"] {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-color: hsl(var(--primary));
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .pseudo-button[aria-pressed="true"]:hover {
+        background: hsl(var(--primary) / 0.9);
+    }
+
     .tabs {
         display: flex;
         background: hsl(var(--muted));

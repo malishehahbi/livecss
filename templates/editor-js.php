@@ -630,12 +630,23 @@
                         document.querySelectorAll('.pseudo-button').forEach(button => {
                             button.addEventListener('click', () => {
                                 const pseudo = button.dataset.pseudo;
-                                if (!selectorInput.value.includes(pseudo)) {
-                                    selectorInput.value += pseudo;
-                                    this.currentSelector = selectorInput.value.trim();
-                                    this.updateVisualControls();
-                                    this.renderUsageDots();
+                                const isPressed = button.getAttribute('aria-pressed') === 'true';
+                                
+                                if (isPressed) {
+                                    // Remove the pseudo-class/element
+                                    selectorInput.value = selectorInput.value.replace(pseudo, '');
+                                    button.setAttribute('aria-pressed', 'false');
+                                } else {
+                                    // Add the pseudo-class/element if not already present
+                                    if (!selectorInput.value.includes(pseudo)) {
+                                        selectorInput.value += pseudo;
+                                        button.setAttribute('aria-pressed', 'true');
+                                    }
                                 }
+                                
+                                // Trigger input event to update everything immediately
+                                const inputEvent = new Event('input', { bubbles: true });
+                                selectorInput.dispatchEvent(inputEvent);
                             });
                         });
 
@@ -924,6 +935,20 @@
                 }
                 this.updateVisualControls();
                 this.renderUsageDots();
+                this.updatePseudoButtonStates();
+            }
+
+            updatePseudoButtonStates() {
+                const selectorInput = document.getElementById('selector-input');
+                if (!selectorInput) return;
+                
+                const selectorValue = selectorInput.value;
+                
+                document.querySelectorAll('.pseudo-button').forEach(button => {
+                    const pseudo = button.dataset.pseudo;
+                    const isActive = selectorValue.includes(pseudo);
+                    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                });
             }
 
             updateBreadcrumb(element) {
