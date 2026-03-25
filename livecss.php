@@ -168,27 +168,29 @@ class LiveCSS {
         }
     }
 
-    // /**
-    //  * Minify CSS content
-    //  */
-    // private function minify_css($css) {
-    //     // Remove comments
-    //     $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
-        
-    //     // Remove whitespace
-    //     $css = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css);
-        
-    //     // Remove unnecessary spaces around selectors and properties
-    //     $css = preg_replace('/\s*{\s*/', '{', $css);
-    //     $css = preg_replace('/;\s*}/', '}', $css);
-    //     $css = preg_replace('/;\s*/', ';', $css);
-    //     $css = preg_replace('/}\s*/', '}', $css);
-    //     $css = preg_replace('/,\s*/', ',', $css);
-    //     $css = preg_replace('/:\s*/', ':', $css);
-        
-    //     // Remove leading/trailing whitespace
-    //     return trim($css);
-    // }
+    /**
+     * Minify CSS content
+     */
+    private function minify_css($css) {
+        // Remove comments.
+        $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
+
+        // Remove new lines and tabs.
+        $css = str_replace(array("\r\n", "\r", "\n", "\t"), '', $css);
+
+        // Remove unnecessary spaces around selectors and properties.
+        $css = preg_replace('/\s*{\s*/', '{', $css);
+        $css = preg_replace('/;\s*}/', '}', $css);
+        $css = preg_replace('/;\s*/', ';', $css);
+        $css = preg_replace('/}\s*/', '}', $css);
+        $css = preg_replace('/,\s*/', ',', $css);
+        $css = preg_replace('/:\s*/', ':', $css);
+
+        // Collapse repeated spaces and trim.
+        $css = preg_replace('/\s{2,}/', ' ', $css);
+
+        return trim($css);
+    }
 
     /**
      * Save CSS via AJAX
