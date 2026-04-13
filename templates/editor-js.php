@@ -56,6 +56,9 @@
         };
     </script>
 
+    <!-- Visual Editor Schema (JSON-driven controls) -->
+    <script src="<?php echo plugins_url('assets/js/visual-editor-schema.js', dirname(__FILE__)); ?>?v=<?php echo defined('LIVECSS_VERSION') ? LIVECSS_VERSION : '2.0.0'; ?>"></script>
+
     <!-- Main Editor Application (reads from window.livecssConfig) -->
     <script src="<?php echo plugins_url('assets/js/editor.js', dirname(__FILE__)); ?>?v=<?php echo defined('LIVECSS_VERSION') ? LIVECSS_VERSION : '2.0.0'; ?>"></script>
 

@@ -51,12 +51,13 @@ class LiveCSSLoader {
         this.maxRetries = 3;
         this.retryCount = 0;
         this.initializationSteps = [
-            { name: 'CodeMirror Library', weight: 12 },
-            { name: 'Feature Libraries', weight: 13 },
-            { name: 'DOM Elements', weight: 8 },
-            { name: 'Code Editor', weight: 17 },
-            { name: 'Event Listeners', weight: 12 },
-            { name: 'Preview Iframe', weight: 23 },
+            { name: 'CodeMirror Library', weight: 10 },
+            { name: 'Feature Libraries', weight: 10 },
+            { name: 'Visual Editor Schema', weight: 8 },
+            { name: 'DOM Elements', weight: 7 },
+            { name: 'Code Editor', weight: 15 },
+            { name: 'Event Listeners', weight: 10 },
+            { name: 'Preview Iframe', weight: 25 },
             { name: 'Final Verification', weight: 15 }
         ];
         this.currentStep = 0;
@@ -176,24 +177,31 @@ class LiveCSSEditor {
             this.loader.updateProgress(1, 'Loading feature libraries...');
             await this.waitForFeatureLibraries();
             
-            // Step 3: Verify DOM elements
-            this.loader.updateProgress(2, 'Verifying DOM elements...');
+            // Step 3: Render visual editor from JSON schema
+            this.loader.updateProgress(2, 'Building visual editor...');
+            if (typeof renderVisualEditor === 'function') {
+                renderVisualEditor(document.getElementById('tab-visual'));
+                LiveCSSLog.ok('Visual editor rendered from schema (' + VISUAL_EDITOR_SCHEMA.length + ' sections)');
+            }
+            
+            // Step 4: Verify DOM elements
+            this.loader.updateProgress(3, 'Verifying DOM elements...');
             await this.verifyDOMElements();
             
-            // Step 4: Setup code editor
-            this.loader.updateProgress(3, 'Setting up code editor...');
+            // Step 5: Setup code editor
+            this.loader.updateProgress(4, 'Setting up code editor...');
             await this.setupCodeEditor();
             
-            // Step 5: Setup event listeners
-            this.loader.updateProgress(4, 'Initializing event listeners...');
+            // Step 6: Setup event listeners
+            this.loader.updateProgress(5, 'Initializing event listeners...');
             await this.setupEventListeners();
             
-            // Step 6: Setup iframe
-            this.loader.updateProgress(5, 'Loading preview iframe...');
+            // Step 7: Setup iframe
+            this.loader.updateProgress(6, 'Loading preview iframe...');
             await this.setupIframe();
             
-            // Step 7: Load saved CSS and final verification
-            this.loader.updateProgress(6, 'Loading saved CSS and verifying...');
+            // Step 8: Load saved CSS and final verification
+            this.loader.updateProgress(7, 'Loading saved CSS and verifying...');
             await this.loadSavedCSS();
             await this.verifyFunctionality();
             
