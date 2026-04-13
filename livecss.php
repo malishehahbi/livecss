@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('LIVECSS_VERSION', '1.0.0');
+define('LIVECSS_VERSION', '2.0.0');
 define('LIVECSS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('LIVECSS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -202,8 +202,9 @@ class LiveCSS {
             exit;
         }
         
-        // Get and sanitize the CSS
-        $css = isset($_POST['css']) ? $_POST['css'] : '';
+        // Get the CSS — wp_unslash() reverses WordPress magic quotes
+        // which would otherwise corrupt content:"..." into content:\"...\"
+        $css = isset($_POST['css']) ? wp_unslash($_POST['css']) : '';
         
         // Minify the CSS
         $minified_css = $this->minify_css($css);
