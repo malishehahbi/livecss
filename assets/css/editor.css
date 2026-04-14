@@ -21,29 +21,52 @@ body {
 editor {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 
-    /* Design Tokens */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 0% 50%;
+    /* Luxury Dark Mode Design Tokens (Default) */
+    --background: 240 10% 4%;       /* Deep rich dark gray/black */
+    --foreground: 0 0% 98%;         /* Crisp white text */
+    --card: 240 10% 6%;             /* Slightly lighter dark background */
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;         /* Vibrant, premium blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 15%;        /* Soft dark gray for secondary actions */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 65%; /* Readable muted text */
+    --accent: 240 5% 18%;           /* Hover state backgrounds */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;       /* Accessible red */
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.6rem;
-    --spacing: 1.25rem; /* Larger base spacing for a more spacious UI */
+    --border: 240 5% 18%;           /* Subtle border lines */
+    --input: 240 5% 15%;            /* Input background */
+    --ring: 217 91% 60%;            /* Focus rings */
+    --radius: 0.5rem;               /* Slightly sharper, modern border radius */
+    --spacing: 1.25rem;
     --zoom-mini: 0.75;
+}
+
+editor.theme-light {
+    /* Premium Light Mode Design Tokens */
+    --background: 0 0% 98%;         /* Off-white, soft background */
+    --foreground: 240 10% 10%;      /* Dark readable text */
+    --card: 0 0% 100%;              /* Pure white cards */
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 217 91% 60%;         /* Vibrant, premium blue */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 92%;          /* Soft light gray for secondary actions */
+    --secondary-foreground: 240 10% 10%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 240 5% 40%; /* Readable muted text */
+    --accent: 0 0% 94%;             /* Hover state backgrounds */
+    --accent-foreground: 240 10% 10%;
+    --destructive: 0 84% 60%;       /* Accessible red */
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 86%;             /* Subtle border lines */
+    --input: 0 0% 100%;             /* Input background */
+    --ring: 217 91% 60%;            /* Focus rings */
 }
 
 editor * {
@@ -76,8 +99,10 @@ editor body, editor html {
    ======================================================================== */
 
 .header {
-    background: hsl(var(--background));
-    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.75); /* Translucent background */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--border) / 0.5); /* Lighter border for depth */
     padding: var(--spacing) calc(var(--spacing) * 1.5);
     display: flex;
     justify-content: space-between;
@@ -246,14 +271,20 @@ editor body, editor html {
     width: 480px; /* Wider sidebar */
     min-width: 420px;
     max-width: 60vw; /* Prevent over-expansion */
-    background: hsl(var(--card));
-    border-right: 1px solid hsl(var(--border));
+    background: hsl(var(--card) / 0.85); /* Glassmorphism card */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid hsl(var(--border) / 0.5);
     display: flex;
     flex-direction: column;
     overflow: auto; /* Required for resize to work */
     height: 100%;
     /* We'll use our own resizer handle for better control */
-    transition: width 0.2s ease;
+    transition: width 0.2s ease, transform 0.3s ease;
+}
+
+.editor-panel.is-dragging {
+    transition: none !important;
 }
 
 /* Collapsed sidebar state */
@@ -310,34 +341,54 @@ editor body, editor html {
 
 .breadcrumb-section {
     padding: 0.75rem var(--spacing);
-    background: hsl(var(--muted));
-    border-bottom: 1px solid hsl(var(--border));
-    font-size: 0.95rem;
+    background: hsla(240, 10%, 6%, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    font-size: 0.85rem;
     color: hsl(var(--muted-foreground));
     white-space: nowrap;
     overflow-x: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.breadcrumb-section::-webkit-scrollbar {
+    height: 4px;
 }
 
 .breadcrumb-part-group {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-separator {
+    color: hsl(var(--muted-foreground) / 0.5);
+    margin: 0 0.25rem;
+    flex-shrink: 0;
 }
 
 .breadcrumb-item {
     cursor: pointer;
-    color: hsl(var(--accent-foreground));
-    transition: color 0.2s, background-color 0.2s;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    margin: 0 1px;
-    display: inline-block;
+    color: hsl(var(--foreground) / 0.85);
+    transition: all 0.2s;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
     border: 1px solid transparent;
+    background: hsla(240, 5%, 25%, 0.2);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.8rem;
+    margin: 0 1px;
 }
 
 .breadcrumb-item:hover {
-    color: hsl(var(--foreground));
-    background-color: hsl(var(--accent));
-    border-color: hsl(var(--border));
-    text-decoration: none;
+    color: hsl(var(--primary-foreground));
+    background-color: hsl(var(--primary));
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px hsl(var(--primary) / 0.3);
 }
 
 .selector-input {
@@ -349,7 +400,7 @@ editor body, editor html {
     margin-bottom: calc(var(--spacing) / 2);
     background: hsl(var(--background));
     transition: border-color 0.2s;
-    color: black;
+    color: white;
 }
 
 option {
@@ -462,34 +513,39 @@ option {
 
 .tabs {
     display: flex;
-    background: hsl(var(--muted));
-    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
     position: sticky; /* Keep tabs visible while scrolling controls */
     top: 0;
     z-index: 3;
     zoom: var(--zoom-mini);
+    padding: 0.5rem 1rem 0;
+    gap: 0.5rem;
 }
 
 .tab {
-    padding: 1rem 1.25rem;
+    padding: 0.75rem 1.25rem;
     cursor: pointer;
     border: none;
-    background: none;
+    background: transparent;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: hsl(var(--muted-foreground));
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     position: relative;
+    border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .tab:hover {
     color: hsl(var(--foreground));
-    background: hsl(var(--accent));
+    background: hsla(240, 5%, 18%, 0.5);
 }
 
 .tab.active {
-    color: hsl(var(--foreground));
-    background: hsl(var(--background));
+    color: hsl(var(--primary-foreground));
+    background: hsl(var(--card) / 0.85);
 }
 
 .tab.active::after {
@@ -499,7 +555,8 @@ option {
     left: 0;
     right: 0;
     height: 2px;
-    background: hsl(var(--foreground));
+    background: hsl(var(--primary));
+    box-shadow: 0 -2px 10px hsl(var(--primary) / 0.5);
 }
 
 /* ========================================================================
@@ -740,30 +797,68 @@ option {
    ACCORDION
    ======================================================================== */
 
+@keyframes spotlight-pulse {
+    0% {
+        box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+        background: hsl(var(--card) / 0.4);
+    }
+    30% {
+        box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
+        background: hsl(var(--accent) / 0.6);
+    }
+    100% {
+        box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+        background: hsl(var(--card) / 0.4);
+    }
+}
+
 .accordion-item {
-    background: hsl(var(--card));
+    background: hsl(var(--card) / 0.4);
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     margin-bottom: var(--spacing);
-    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s, background 0.3s;
+}
+
+.accordion-item:hover {
+    border-color: hsl(var(--border) / 0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .accordion-header {
-    background: hsl(var(--background));
+    background: hsla(240, 10%, 6%, 0.85); /* Slightly darker/glassy */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius);
     padding: 1rem 1.25rem;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease, padding-left 0.2s ease, border-radius 0.2s ease;
     user-select: none;
-    font-size: 1rem;
-    position: relative; /* for usage-dot positioning */
+    font-size: 0.95rem;
+    position: sticky;
+    top: calc(var(--spacing) * -1.25); /* Account for .tab-content padding */
+    z-index: 10;
+    color: hsl(var(--foreground));
+    letter-spacing: 0.02em;
+}
+
+.theme-light .accordion-header {
+    background: hsla(0, 0%, 100%, 0.85);
+}
+
+.accordion-header.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
 }
 
 .accordion-header:hover {
-    background: hsl(var(--accent));
+    background: hsla(240, 5%, 18%, 0.5); /* subtle hover */
+    padding-left: 1.35rem; /* micro-interaction */
 }
 
 .accordion-header::after {
@@ -791,40 +886,163 @@ option {
    ======================================================================== */
 
 .control-group {
-    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 130px; /* Label | Input */
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+}
+
+.control-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Sub-grid for input with units */
+.input-with-units {
+    display: flex;
+    overflow: hidden;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    background: hsl(var(--input) / 0.5);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-with-units:focus-within {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 1px hsl(var(--ring) / 0.5);
+    background: hsl(var(--input));
+}
+
+.input-with-units .control {
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding-right: 0.25rem;
+}
+
+.input-with-units .control:focus {
+    box-shadow: none;
+}
+
+.unit-select {
+    border: none;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.75rem;
+    padding: 0 0.25rem 0 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.unit-select:focus {
+    outline: none;
+    color: hsl(var(--foreground));
+}
+
+/* Custom Range Slider */
+.control-slider-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 40px;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.slider-number {
+    padding: 0.25rem;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+.slider-number::-webkit-inner-spin-button, 
+.slider-number::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+
+.custom-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+.custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background: hsl(var(--primary-foreground));
+    cursor: pointer;
+    margin-top: -5px; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.custom-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: hsl(var(--border));
+    border-radius: 2px;
+}
+.custom-slider:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+.control-group:hover {
+    background: hsl(var(--accent) / 0.4);
 }
 
 .control-label {
     display: flex; /* allow dot to align to the right */
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    font-size: 1rem;
+    margin-bottom: 0;
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s;
+}
+
+.control-group:hover .control-label {
     color: hsl(var(--foreground));
 }
 
 .control {
     width: 100%;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid hsl(var(--input));
+    padding: 0.5rem 0.75rem;
+    border: 1px solid hsl(var(--border));
     border-radius: calc(var(--radius) - 2px);
-    font-size: 1rem;
-    background: hsl(var(--background));
-    transition: border-color 0.2s;
-    color: black;
+    font-size: 0.85rem;
+    background: hsl(var(--input) / 0.5);
+    transition: border-color 0.2s, background 0.2s;
+    color: hsl(var(--foreground));
 }
 
 .control:focus {
     outline: none;
     border-color: hsl(var(--ring));
-    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
+    background: hsl(var(--input));
+    box-shadow: 0 0 0 1px hsl(var(--ring) / 0.5);
 }
 
 .control[type="color"] {
-    padding: 0.125rem;
-    height: 3rem;
+    padding: 0;
+    height: 28px;
+    width: 100%;
     cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid hsl(var(--border));
+}
+
+.control[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+
+.control[type="color"]::-webkit-color-swatch {
+	border: none;
+	border-radius: 3px;
 }
 
 /* ========================================================================
@@ -846,14 +1064,35 @@ option {
     gap: 0.5rem;
 }
 
+.button-icon {
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: hsl(var(--foreground));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.button-icon:hover {
+    background: hsl(var(--accent));
+    transform: scale(1.05);
+}
+
 .button-primary {
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     border-color: hsl(var(--primary));
+    box-shadow: 0 4px 14px 0 hsl(var(--primary) / 0.39);
 }
 
 .button-primary:hover {
     background: hsl(var(--primary) / 0.9);
+    box-shadow: 0 6px 20px rgba(0, 118, 255, 0.23);
+    transform: translateY(-1px);
     border-color: hsl(var(--primary) / 0.9);
 }
 

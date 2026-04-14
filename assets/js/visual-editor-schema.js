@@ -119,12 +119,12 @@ const VISUAL_EDITOR_SCHEMA = [
     {
         title: 'Sizing',
         controls: [
-            { label: 'Width', property: 'width', type: 'text', placeholder: '100px, 50%, auto' },
-            { label: 'Height', property: 'height', type: 'text', placeholder: '100px, 50%, auto' },
-            { label: 'Min Width', property: 'min-width', type: 'text', placeholder: '100px, 50%' },
-            { label: 'Max Width', property: 'max-width', type: 'text', placeholder: '1200px, 100%' },
-            { label: 'Min Height', property: 'min-height', type: 'text', placeholder: '100px, 50vh' },
-            { label: 'Max Height', property: 'max-height', type: 'text', placeholder: '800px, 100vh' },
+            { label: 'Width', property: 'width', type: 'text', placeholder: '100, auto', units: ['px', '%', 'vw', 'rem', 'em', 'auto'] },
+            { label: 'Height', property: 'height', type: 'text', placeholder: '100, auto', units: ['px', '%', 'vh', 'rem', 'em', 'auto'] },
+            { label: 'Min Width', property: 'min-width', type: 'text', placeholder: '100', units: ['px', '%', 'vw', 'rem'] },
+            { label: 'Max Width', property: 'max-width', type: 'text', placeholder: '1200', units: ['px', '%', 'vw', 'rem'] },
+            { label: 'Min Height', property: 'min-height', type: 'text', placeholder: '100', units: ['px', '%', 'vh', 'rem'] },
+            { label: 'Max Height', property: 'max-height', type: 'text', placeholder: '800', units: ['px', '%', 'vh', 'rem'] },
             { label: 'Box Sizing', property: 'box-sizing', type: 'select', options: [
                 ['', 'Default'], ['content-box', 'Content Box'], ['border-box', 'Border Box']
             ]},
@@ -336,16 +336,16 @@ const VISUAL_EDITOR_SCHEMA = [
     {
         title: 'Spacing',
         controls: [
-            { label: 'Padding', property: 'padding', type: 'text', placeholder: '10px, 1em' },
-            { label: 'Padding Top', property: 'padding-top', type: 'text', placeholder: '10px, 1em' },
-            { label: 'Padding Right', property: 'padding-right', type: 'text', placeholder: '10px, 1em' },
-            { label: 'Padding Bottom', property: 'padding-bottom', type: 'text', placeholder: '10px, 1em' },
-            { label: 'Padding Left', property: 'padding-left', type: 'text', placeholder: '10px, 1em' },
-            { label: 'Margin', property: 'margin', type: 'text', placeholder: '10px, 1em, auto' },
-            { label: 'Margin Top', property: 'margin-top', type: 'text', placeholder: '10px, 1em, auto' },
-            { label: 'Margin Right', property: 'margin-right', type: 'text', placeholder: '10px, 1em, auto' },
-            { label: 'Margin Bottom', property: 'margin-bottom', type: 'text', placeholder: '10px, 1em, auto' },
-            { label: 'Margin Left', property: 'margin-left', type: 'text', placeholder: '10px, 1em, auto' }
+            { label: 'Padding', property: 'padding', type: 'text', placeholder: '10, 1', units: ['px', 'rem', 'em', '%'] },
+            { label: 'Padding Top', property: 'padding-top', type: 'text', placeholder: '10, 1', units: ['px', 'rem', 'em', '%'] },
+            { label: 'Padding Right', property: 'padding-right', type: 'text', placeholder: '10, 1', units: ['px', 'rem', 'em', '%'] },
+            { label: 'Padding Bottom', property: 'padding-bottom', type: 'text', placeholder: '10, 1', units: ['px', 'rem', 'em', '%'] },
+            { label: 'Padding Left', property: 'padding-left', type: 'text', placeholder: '10, 1', units: ['px', 'rem', 'em', '%'] },
+            { label: 'Margin', property: 'margin', type: 'text', placeholder: '10, auto', units: ['px', 'rem', 'em', '%', 'auto'] },
+            { label: 'Margin Top', property: 'margin-top', type: 'text', placeholder: '10, auto', units: ['px', 'rem', 'em', '%', 'auto'] },
+            { label: 'Margin Right', property: 'margin-right', type: 'text', placeholder: '10, auto', units: ['px', 'rem', 'em', '%', 'auto'] },
+            { label: 'Margin Bottom', property: 'margin-bottom', type: 'text', placeholder: '10, auto', units: ['px', 'rem', 'em', '%', 'auto'] },
+            { label: 'Margin Left', property: 'margin-left', type: 'text', placeholder: '10, auto', units: ['px', 'rem', 'em', '%', 'auto'] }
         ]
     },
 
@@ -489,6 +489,9 @@ function renderVisualEditor(container) {
             group.appendChild(label);
 
             // Input element
+            let inputContainer = document.createElement('div');
+            inputContainer.className = 'control-input-wrapper';
+            
             let input;
 
             switch (ctrl.type) {
@@ -502,6 +505,7 @@ function renderVisualEditor(container) {
                         opt.textContent = text;
                         input.appendChild(opt);
                     });
+                    inputContainer.appendChild(input);
                     break;
                 }
 
@@ -510,17 +514,39 @@ function renderVisualEditor(container) {
                     input.type = 'color';
                     input.className = 'control';
                     input.dataset.property = ctrl.property;
+                    inputContainer.appendChild(input);
                     break;
                 }
 
                 case 'range': {
+                    inputContainer.className = 'control-slider-wrapper';
+                    
                     input = document.createElement('input');
                     input.type = 'range';
-                    input.className = 'control';
-                    input.dataset.property = ctrl.property;
+                    input.className = 'custom-slider';
                     if (ctrl.min !== undefined) input.min = ctrl.min;
                     if (ctrl.max !== undefined) input.max = ctrl.max;
                     if (ctrl.step !== undefined) input.step = ctrl.step;
+
+                    const numInput = document.createElement('input');
+                    numInput.type = 'number';
+                    numInput.className = 'control slider-number';
+                    numInput.dataset.property = ctrl.property;
+                    if (ctrl.min !== undefined) numInput.min = ctrl.min;
+                    if (ctrl.max !== undefined) numInput.max = ctrl.max;
+                    if (ctrl.step !== undefined) numInput.step = ctrl.step;
+
+                    // Sync logic
+                    input.addEventListener('input', () => {
+                        numInput.value = input.value;
+                        numInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    });
+                    numInput.addEventListener('input', () => {
+                        input.value = numInput.value;
+                    });
+
+                    inputContainer.appendChild(input);
+                    inputContainer.appendChild(numInput);
                     break;
                 }
 
@@ -530,11 +556,12 @@ function renderVisualEditor(container) {
                     input.className = 'control';
                     input.dataset.property = ctrl.property;
                     if (ctrl.placeholder) input.placeholder = ctrl.placeholder;
+                    inputContainer.appendChild(input);
                     break;
                 }
             }
 
-            group.appendChild(input);
+            group.appendChild(inputContainer);
             content.appendChild(group);
         });
 

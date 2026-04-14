@@ -158,7 +158,34 @@ class LiveCSSEditor {
         this.historyIndex = -1;
         this.maxHistorySize = 50;
         
+        this.initializeTheme();
         this.init();
+    }
+
+    initializeTheme() {
+        const savedTheme = localStorage.getItem('livecss_theme');
+        const editorTag = document.querySelector('editor');
+        if (savedTheme === 'light') {
+            editorTag.classList.add('theme-light');
+            setTimeout(() => this.updateThemeIcon('light'), 0);
+        } else {
+            editorTag.classList.remove('theme-light');
+            setTimeout(() => this.updateThemeIcon('dark'), 0);
+        }
+    }
+
+    updateThemeIcon(theme) {
+        const sun = document.querySelector('.icon-sun');
+        const moon = document.querySelector('.icon-moon');
+        if (!sun || !moon) return;
+        
+        if (theme === 'light') {
+            sun.classList.add('hidden');
+            moon.classList.remove('hidden');
+        } else {
+            sun.classList.remove('hidden');
+            moon.classList.add('hidden');
+        }
     }
 
     /**
@@ -537,6 +564,18 @@ class LiveCSSEditor {
                     });
                 });
 
+                // ── Theme toggle ──
+                const themeToggle = document.getElementById('theme-toggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                        const editorTag = document.querySelector('editor');
+                        editorTag.classList.toggle('theme-light');
+                        const isLight = editorTag.classList.contains('theme-light');
+                        localStorage.setItem('livecss_theme', isLight ? 'light' : 'dark');
+                        this.updateThemeIcon(isLight ? 'light' : 'dark');
+                    });
+                }
+
                 // ── Accordion ──
                 document.querySelectorAll('.accordion-header').forEach(header => {
                     header.addEventListener('click', () => {
@@ -853,7 +892,48 @@ class LiveCSSEditor {
             const inputEvent = new Event('input', { bubbles: true });
             document.getElementById('selector-input').dispatchEvent(inputEvent);
             this.updateBreadcrumb(e.target);
+
+            // Phase 3: Intelligent Contextual Discovery
+            const tag = e.target.tagName.toLowerCase();
+            let expectedSection = 'Sizing'; // Default fallback
+            
+            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'a', 'strong', 'em', 'blockquote', 'label'].includes(tag)) {
+                expectedSection = 'Typography';
+            } else if (['img', 'video', 'svg', 'canvas', 'picture', 'iframe'].includes(tag)) {
+                expectedSection = 'Filters'; // or Sizing, but filters is highly visual for media
+            } else if (['ul', 'ol', 'li', 'dl', 'dt', 'dd'].includes(tag)) {
+                expectedSection = 'Lists';
+            } else if (['div', 'section', 'article', 'header', 'footer', 'nav', 'main', 'aside'].includes(tag)) {
+                expectedSection = 'Layout';
+            } else if (['button', 'input', 'select', 'textarea', 'form'].includes(tag)) {
+                expectedSection = 'Borders'; // Useful for forms
+            }
+            
+            this.autoExpandSection(expectedSection);
         }, true);
+    }
+
+    autoExpandSection(sectionTitle) {
+        const headers = document.querySelectorAll('.accordion-header');
+        for (const header of headers) {
+            if (header.textContent.trim() === sectionTitle) {
+                // If it's already active, do nothing
+                if (!header.classList.contains('active')) {
+                    this.toggleAccordion(header);
+                    // Add a subtle highlight pulse to indicate AI selection
+                    const item = header.closest('.accordion-item');
+                    if (item) {
+                        item.style.animation = 'none';
+                        setTimeout(() => {
+                            item.style.animation = 'spotlight-pulse 1.5s ease';
+                        }, 50);
+                    }
+                    // Scroll it into view smoothly
+                    header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                break;
+            }
+        }
     }
 
     // ===================================================================
@@ -922,7 +1002,8 @@ class LiveCSSEditor {
             currentElement = currentElement.parentElement;
         }
 
-        breadcrumbContainer.innerHTML = breadcrumbs.join(' &gt; ');
+        const separator = `<svg class="breadcrumb-separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+        breadcrumbContainer.innerHTML = breadcrumbs.join(separator);
     }
 
     /**
@@ -996,6 +1077,18 @@ class LiveCSSEditor {
         if (!isActive) {
             header.classList.add('active');
             content.classList.add('active');
+            
+            // Smart scroll to position accordion at top
+            const tabContent = header.closest('.tab-content');
+            if (tabContent) {
+                 setTimeout(() => {
+                     const item = header.parentElement;
+                     tabContent.scrollTo({
+                         top: item.offsetTop - 20, // offset slightly
+                         behavior: 'smooth'
+                     });
+                 }, 50);
+            }
         }
     }
 
@@ -2253,10 +2346,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let dragging = false;
             let startX = 0;
             let startWidth = 0;
+            let ticking = false;
 
             function startDrag(e){
                 if (panel.classList.contains('is-collapsed')) return;
                 dragging = true;
+                panel.classList.add('is-dragging');
                 startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
                 startWidth = panel.getBoundingClientRect().width;
                 document.body.style.userSelect = 'none';
@@ -2265,11 +2360,19 @@ document.addEventListener('DOMContentLoaded', () => {
             function onDrag(e){
                 if (!dragging) return;
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-                applyWidth(startWidth + (clientX - startX));
+                
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        applyWidth(startWidth + (clientX - startX));
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
             }
             function endDrag(){
                 if (!dragging) return;
                 dragging = false;
+                panel.classList.remove('is-dragging');
                 document.body.style.userSelect = '';
                 document.body.style.cursor = '';
                 try {
