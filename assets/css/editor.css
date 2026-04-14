@@ -341,7 +341,7 @@ editor body, editor html {
 
 .breadcrumb-section {
     padding: 0.75rem var(--spacing);
-    background: hsla(240, 10%, 6%, 0.6);
+    background: hsl(var(--background));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid hsl(var(--border) / 0.5);
@@ -352,10 +352,13 @@ editor body, editor html {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--background));
+    scrollbar-width: thin;
 }
 
 .breadcrumb-section::-webkit-scrollbar {
-    height: 4px;
+    height: 20px;
+
 }
 
 .breadcrumb-part-group {
@@ -400,7 +403,7 @@ editor body, editor html {
     margin-bottom: calc(var(--spacing) / 2);
     background: hsl(var(--background));
     transition: border-color 0.2s;
-    color: white;
+    color: hsl(var(--foreground))
 }
 
 option {
@@ -465,7 +468,7 @@ option {
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     box-shadow: 0 12px 24px rgba(0,0,0,.12);
-    z-index: 10;
+    z-index: 100;
 }
 
 .selector-suggest.hidden { display: none; }
@@ -601,6 +604,7 @@ option {
     overflow-y: auto;
     padding: calc(var(--spacing) * 1.25);
     height: 100%;
+    position: relative;
 }
 
 #tab-visual {

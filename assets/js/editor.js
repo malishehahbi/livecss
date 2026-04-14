@@ -2352,6 +2352,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (panel.classList.contains('is-collapsed')) return;
                 dragging = true;
                 panel.classList.add('is-dragging');
+                
+                const iframe = document.getElementById('livecss-preview-frame');
+                if (iframe) iframe.style.pointerEvents = 'none';
+
                 startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
                 startWidth = panel.getBoundingClientRect().width;
                 document.body.style.userSelect = 'none';
@@ -2373,6 +2377,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!dragging) return;
                 dragging = false;
                 panel.classList.remove('is-dragging');
+                
+                const iframe = document.getElementById('livecss-preview-frame');
+                if (iframe) iframe.style.pointerEvents = '';
+
                 document.body.style.userSelect = '';
                 document.body.style.cursor = '';
                 try {
