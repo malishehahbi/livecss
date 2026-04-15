@@ -26,7 +26,7 @@
     <div id="livecss-loader" class="livecss-loader">
         <div class="livecss-loader-content">
             <div class="livecss-spinner"></div>
-            <h3>Initializing LiveCSS Editor</h3>
+            <h3>Initializing LiveCSS</h3>
             <div class="livecss-loader-progress">
                 <div class="livecss-progress-bar">
                     <div class="livecss-progress-fill" id="loader-progress"></div>
