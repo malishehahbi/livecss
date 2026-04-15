@@ -20,7 +20,10 @@
     <editor>
     <div class="editor-container" role="application" aria-label="LiveCSS visual editor">
             <header class="header" role="banner">
-                <h1>LiveCSS Editor</h1>
+                <div class="logo-container">
+                    <img src="/wp-content/plugins/livecss/assets/images/logo-light.svg" alt="LiveCSS" class="logo logo-light">
+                    <img src="/wp-content/plugins/livecss/assets/images/logo-dark.svg" alt="LiveCSS" class="logo logo-dark">
+                </div>
                 <div class="device-toggle" role="group" aria-label="Preview device">
                     <button type="button" id="btn-desktop" class="device-btn active" data-device="desktop" title="Desktop">Desktop</button>
                     <button type="button" id="btn-tablet" class="device-btn" data-device="tablet" title="Tablet">Tablet</button>
