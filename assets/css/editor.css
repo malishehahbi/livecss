@@ -115,10 +115,8 @@ editor body, editor html {
    ======================================================================== */
 
 .header {
-    background: color-mix(in oklch, var(--background) 75%, transparent); /* Translucent background */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid color-mix(in oklch, var(--border) 50%, transparent); /* Lighter border for depth */
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
     padding: var(--spacing) calc(var(--spacing) * 1.5);
     display: flex;
     justify-content: space-between;
@@ -224,13 +222,11 @@ editor body, editor html {
 
 .exit-preview-button:hover {
     background: color-mix(in oklch, var(--primary) 90%, transparent);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
 .exit-preview-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 
 .exit-preview-button svg {
@@ -287,10 +283,8 @@ editor body, editor html {
     width: 480px; /* Wider sidebar */
     min-width: 420px;
     max-width: 60vw; /* Prevent over-expansion */
-    background: color-mix(in oklch, var(--card) 85%, transparent); /* Glassmorphism card */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-right: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
+    background: var(--card);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     overflow: auto; /* Required for resize to work */
@@ -406,8 +400,7 @@ editor body, editor html {
 .breadcrumb-item:hover {
     color: var(--primary-foreground);
     background-color: var(--primary);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px color-mix(in oklch, var(--primary) 30%, transparent);
+    box-shadow: var(--shadow-sm);
 }
 
 .selector-input {
@@ -532,10 +525,8 @@ option {
 
 .tabs {
     display: flex;
-    background: color-mix(in oklch, var(--background) 70%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
     position: sticky; /* Keep tabs visible while scrolling controls */
     top: 0;
     z-index: 3;
@@ -563,7 +554,7 @@ option {
 }
 
 .tab.active {
-    color: var(--primary-foreground);
+    color: var(--primary);
     background: color-mix(in oklch, var(--card) 85%, transparent);
 }
 
@@ -1099,20 +1090,17 @@ option {
 
 .button-icon:hover {
     background: var(--accent);
-    transform: scale(1.05);
 }
 
 .button-primary {
     background: var(--primary);
     color: var(--primary-foreground);
     border-color: var(--primary);
-    box-shadow: 0 4px 14px 0 color-mix(in oklch, var(--primary) 39%, transparent);
 }
 
 .button-primary:hover {
     background: color-mix(in oklch, var(--primary) 90%, transparent);
-    box-shadow: 0 6px 20px rgba(0, 118, 255, 0.23);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
     border-color: color-mix(in oklch, var(--primary) 90%, transparent);
 }
 
@@ -1173,7 +1161,7 @@ option {
 .preview-area {
     flex: 1;
     position: relative;
-    background: var(--background);
+    background: var(--muted);
     overflow: auto; /* Allow scrolling if iframe is wider than viewport */
     display: flex; 
     align-items: stretch; 
@@ -1260,7 +1248,38 @@ option {
     height: 100% !important;
     min-height: 450px;
     font-size: 1em; /* Make code text easier to read */
+    background: var(--background) !important;
+    color: var(--foreground) !important;
 }
+
+.CodeMirror-gutters {
+    background: var(--card) !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+.CodeMirror-linenumber {
+    color: var(--muted-foreground) !important;
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid var(--primary) !important;
+}
+
+/* Dynamic Syntax Highlighting utilizing OKLCH scales */
+.cm-s-default .cm-keyword { color: var(--chart-1) !important; }
+.cm-s-default .cm-atom { color: var(--chart-2) !important; }
+.cm-s-default .cm-number { color: var(--chart-3) !important; }
+.cm-s-default .cm-def { color: var(--chart-4) !important; }
+.cm-s-default .cm-variable { color: var(--foreground) !important; }
+.cm-s-default .cm-variable-2 { color: var(--chart-5) !important; }
+.cm-s-default .cm-variable-3 { color: var(--primary) !important; }
+.cm-s-default .cm-property { color: var(--chart-4) !important; }
+.cm-s-default .cm-operator { color: var(--foreground) !important; }
+.cm-s-default .cm-comment { color: var(--muted-foreground) !important; }
+.cm-s-default .cm-string { color: var(--destructive) !important; }
+.cm-s-default .cm-string-2 { color: var(--destructive) !important; }
+.cm-s-default .cm-qualifier { color: var(--chart-1) !important; }
+.cm-s-default .cm-builtin { color: var(--chart-2) !important; }
 
 .CodeMirror-scroll {
     min-height: 450px;

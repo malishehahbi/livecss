@@ -925,7 +925,7 @@ class LiveCSSEditor {
                     if (item) {
                         item.style.animation = 'none';
                         setTimeout(() => {
-                            item.style.animation = 'spotlight-pulse 1.5s ease';
+                            item.style.animation = '';
                         }, 50);
                     }
                     // Scroll it into view smoothly
