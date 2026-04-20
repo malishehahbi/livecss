@@ -1,0 +1,69 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version to release, for example 2.0.1
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            raw_version="${{ inputs.version }}"
+          else
+            raw_version="${GITHUB_REF_NAME}"
+          fi
+
+          version="${raw_version#v}"
+
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Only stable semantic versions are allowed. Use tags like v2.0.1."
+            exit 1
+          fi
+
+          plugin_version=$(grep -m1 -oE '^ \* Version: .*' livecss.php | sed 's/^ \* Version: //')
+
+          if [ "$plugin_version" != "$version" ]; then
+            echo "Plugin header version ($plugin_version) does not match release version ($version)."
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "package=livecss-v$version.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Build release package
+        shell: bash
+        run: |
+          zip -r "${{ steps.version.outputs.package }}" . \
+            -x '.git/*' \
+            -x '.github/*' \
+            -x 'docs/*' \
+            -x '.DS_Store' \
+            -x '*/.DS_Store'
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: LiveCSS ${{ steps.version.outputs.version }}
+          files: ${{ steps.version.outputs.package }}
+          prerelease: false
+          generate_release_notes: true

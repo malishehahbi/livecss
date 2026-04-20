@@ -228,7 +228,7 @@ class LiveCSS_Class_Manager {
                 'wp-i18n',
                 'wp-plugins'
             ),
-            'version' => defined('LIVECSS_VERSION') ? LIVECSS_VERSION : '1.0.0'
+            'version' => defined('LIVECSS_VERSION') ? LIVECSS_VERSION : '2.0.0'
         );
         
         // Enqueue the block editor script
